@@ -1,0 +1,28 @@
+import { useFonts } from "expo-font";
+import { Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const Header = () => {
+  const [fontsLoaded] = useFonts({
+    BMJUA: require("../../assets/fonts/BMJUA.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    console.log("Fonts not loaded yet");
+    return null;
+  }
+
+  return (
+    <SafeAreaView edges={["top"]} className="bg-gray-800 justify-center">
+      <View className="items-center py-4">
+        <Text
+          className="text-4xl font-bold"
+          style={{ color: "#FF91B0", fontFamily: "BMJUA" }}
+        >
+          TODOO
+        </Text>
+      </View>
+    </SafeAreaView>
+  );
+};
+export default Header;

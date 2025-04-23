@@ -2,24 +2,23 @@ import ProfileBox from "@/components/main/ProfileBox";
 import { render } from "@testing-library/react-native";
 import React from "react";
 
+import profileImage from "../../assets/images/testImg/blackSpirit.jpg";
+import medalImage from "../../assets/images/testImg/testMedal.png";
+
 jest.mock("react-native/Libraries/Image/Image", () => "Image");
 
 describe("ProfileBox", () => {
   const profileData = {
     level: 21,
     name: "문미새",
-    profileImage: require("@/assets/images/testImg/blackSpirit.jpg"),
-    medalImage: require("@/assets/images/testImg/testMedal.png"),
+    profileImage,
+    medalImage,
   };
 
   const getFormattedDate = () => {
     const today = new Date();
-    console.log(today);
     const options = { month: "long", day: "numeric", weekday: "long" };
-    const formattedDate = new Intl.DateTimeFormat("ko-KR", options).format(
-      today
-    );
-    return formattedDate;
+    return new Intl.DateTimeFormat("ko-KR", options).format(today);
   };
 
   const dummyDate = getFormattedDate();

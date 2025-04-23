@@ -6,17 +6,11 @@ import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
-import { useAuth } from "@/hooks/useAuth";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const { isAuthenticated } = useAuth();
-
-  // if (!isAuthenticated) {
-  //   return <Redirect href="/login" />;
-  // }
 
   return (
     <Tabs
@@ -30,7 +24,6 @@ export default function TabLayout() {
           paddingBottom: 50,
           ...Platform.select({
             ios: {
-              // Use a transparent background on iOS to show the blur effect
               position: "absolute",
             },
             default: {},

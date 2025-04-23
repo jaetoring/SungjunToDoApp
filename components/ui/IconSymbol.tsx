@@ -1,16 +1,13 @@
 import React from "react";
-import {
-  Image,
-  ImageSourcePropType,
-  OpaqueColorValue,
-  StyleProp,
-  ViewStyle,
-} from "react-native";
+import { Image, ImageSourcePropType, StyleProp, ViewStyle } from "react-native";
+import home from "../../assets/images/tabBarIcons/home.png";
+import mypage from "../../assets/images/tabBarIcons/mypage.png";
+import setting from "../../assets/images/tabBarIcons/setting.png";
 
 const ICON_IMAGE_MAP: Record<string, ImageSourcePropType> = {
-  "house.fill": require("../../assets/images/tabBarIcons/home.png"),
-  "setting.fill": require("../../assets/images/tabBarIcons/setting.png"),
-  "mypage.fill": require("../../assets/images/tabBarIcons/mypage.png"),
+  "house.fill": home,
+  "setting.fill": mypage,
+  "mypage.fill": setting,
 };
 
 export type IconSymbolName = keyof typeof ICON_IMAGE_MAP;
@@ -18,12 +15,10 @@ export type IconSymbolName = keyof typeof ICON_IMAGE_MAP;
 export function IconSymbol({
   name,
   size = 24,
-  color,
   style,
 }: {
   name: IconSymbolName;
   size?: number;
-  color: string | OpaqueColorValue;
   style?: StyleProp<ViewStyle>;
 }) {
   return (

@@ -6,11 +6,14 @@ import {
   StyleProp,
   ViewStyle,
 } from "react-native";
+import home from "../../assets/images/tabBarIcons/home.png";
+import mypage from "../../assets/images/tabBarIcons/mypage.png";
+import setting from "../../assets/images/tabBarIcons/setting.png";
 
 const ICON_IMAGE_MAP: Record<string, ImageSourcePropType> = {
-  "house.fill": require("../../assets/images/tabBarIcons/home.png"),
-  "setting.fill": require("../../assets/images/tabBarIcons/setting.png"),
-  "mypage.fill": require("../../assets/images/tabBarIcons/mypage.png"),
+  "house.fill": home,
+  "setting.fill": setting,
+  "mypage.fill": mypage,
 };
 
 export type IconSymbolName = keyof typeof ICON_IMAGE_MAP;

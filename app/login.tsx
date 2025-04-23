@@ -6,15 +6,19 @@ import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
+import bangersFont from "../../assets/fonts/Bangers-Regular.ttf";
+import googleIcon from "../../assets/images/googleIcon.png";
+import throwDiceImg from "../../assets/images/throwDice.png";
+
 export default function LoginScreen() {
   const { login } = useAuth();
   const router = useRouter();
 
   const [fontsLoaded] = useFonts({
-    Bangers: require("@/assets/fonts/Bangers-Regular.ttf"),
+    Bangers: bangersFont,
   });
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
+  const [, response, promptAsync] = Google.useAuthRequest({
     androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
   });
@@ -47,19 +51,13 @@ export default function LoginScreen() {
       <Text className="w-full text-center font-bangers text-6xl text-white mb-6 tracking-wide">
         Yacht Dice
       </Text>
-      <Image
-        className="w-52 h-52 mb-10 opacity-90"
-        source={require("@/assets/images/throwDice.png")}
-      />
+      <Image className="w-52 h-52 mb-10 opacity-90" source={throwDiceImg} />
       <TouchableOpacity
         className="bg-white px-8 py-4 rounded-full flex-row items-center shadow-lg shadow-gray-800/50"
         activeOpacity={0.85}
         onPress={() => promptAsync()}
       >
-        <Image
-          source={require("@/assets/images/googleIcon.png")}
-          className="w-7 h-7 mr-4"
-        />
+        <Image source={googleIcon} className="w-7 h-7 mr-4" />
         <Text className="text-xl font-bold text-gray-800">
           Sign in with Google
         </Text>

@@ -23,7 +23,7 @@ describe("ProfileBox", () => {
 
   const dummyDate = getFormattedDate();
 
-  // 유저 데이터 조회
+  // 유저 데이터 조회합니다.
   it("유저 정보를 올바르게 렌더링한다.", () => {
     const { getByText } = render(
       <ProfileBox date={dummyDate} profileData={profileData} />

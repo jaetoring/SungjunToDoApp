@@ -34,15 +34,15 @@ describe("ProfileBox", () => {
       getByText(`LV.${profileData.level} ${profileData.name}`)
     ).toBeTruthy();
   });
-    
-    // 날짜 가져오기
-    it("날짜를 올바르게 가져온다.", () => {
-        const { getByText } = render(
-            <ProfileBox date={dummyDate} profileData={profileData} />
-        );
 
-        expect(getByText(`📆 ${dummyDate}`)).toBeTruthy();
-    })
+  // 날짜 가져오기
+  it("날짜를 올바르게 가져온다.", () => {
+    const { getByText } = render(
+      <ProfileBox date={dummyDate} profileData={profileData} />
+    );
+
+    expect(getByText(`📆 ${dummyDate}`)).toBeTruthy();
+  });
 
   // 프로필 이미지와 레벨 메달 가져오기
   it("프로필 이미지와 레벨 메달을 올바르게 렌더링한다.", () => {

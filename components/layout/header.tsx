@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const Header = () => {
   const [fontsLoaded] = useFonts({
-    BMJUA: require("../../assets/fonts/BMJUA.ttf"),
+    BMJUA: require("@/assets/fonts/BMJUA.ttf"),
   });
 
   if (!fontsLoaded) {
@@ -13,7 +13,7 @@ const Header = () => {
   }
 
   return (
-    <SafeAreaView edges={["top"]} className="bg-gray-800 justify-center">
+    <SafeAreaView edges={["top"]} className="justify-center">
       <View className="items-center py-4">
         <Text
           className="text-4xl font-bold"

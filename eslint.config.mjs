@@ -8,6 +8,8 @@ export default defineConfig([
       "./scripts/reset-project.js",
       "./tailwind.config.js",
       "./metro.config.js",
+      "./hooks/useThemeColor.ts",
+      "./components/ThemedText.tsx"
     ],
   },
   {

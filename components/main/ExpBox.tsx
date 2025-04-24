@@ -29,7 +29,7 @@ const ExpBox = ({ level, maxExp, currentExp }: ExpBoxProps) => {
           <Text
             testID="exp-level"
             className="text-3xl font-bold"
-            style={{ display: "none" }}
+            style={{ opacity: 0 }}
           >
             LV.{newLevel}
           </Text>

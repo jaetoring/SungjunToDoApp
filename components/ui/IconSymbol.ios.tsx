@@ -2,9 +2,9 @@ import React from "react";
 import {
   Image,
   ImageSourcePropType,
+  ImageStyle,
   OpaqueColorValue,
   StyleProp,
-  ViewStyle,
 } from "react-native";
 import home from "../../assets/images/tabBarIcons/home.png";
 import mypage from "../../assets/images/tabBarIcons/mypage.png";
@@ -27,7 +27,7 @@ export function IconSymbol({
   name: IconSymbolName;
   size?: number;
   color: string | OpaqueColorValue;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<ImageStyle>;
 }) {
   return (
     <Image

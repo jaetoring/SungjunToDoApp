@@ -25,8 +25,12 @@ const ExpBox = ({ level, maxExp, currentExp }: ExpBoxProps) => {
       <View className="w-full flex-col px-5 py-4">
         <View className="w-full flex-row justify-between mb-4">
           <Text className="text-3xl font-bold">EXP Bar</Text>
-          {/* 렙업 시 테스트 */}
-          <Text testID="exp-level" className="text-3xl font-bold">
+          {/* 테스팅 코드 레벨업 시 레벨 표시*/}
+          <Text
+            testID="exp-level"
+            className="text-3xl font-bold"
+            style={{ display: "none" }}
+          >
             LV.{newLevel}
           </Text>
           <Text className="text-xl font-light">

@@ -35,7 +35,7 @@ export default function TabLayout() {
         name="setting"
         options={{
           tabBarShowLabel: false,
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ focused }) => (
             <IconSymbol
               size={35}
               name="setting.fill"
@@ -50,7 +50,7 @@ export default function TabLayout() {
         name="index"
         options={{
           tabBarShowLabel: false,
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ focused }) => (
             <LinearGradient
               colors={["#FFC4C4", "#FFD5B7"]}
               start={{ x: 0, y: 0 }}

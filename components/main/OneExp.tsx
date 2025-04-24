@@ -1,7 +1,7 @@
 import { View } from "react-native";
 
 interface OneExpProps {
-  fillBox: number;
+  fillBox?: number;
 }
 
 const OneExp = ({ fillBox = 0 }: OneExpProps) => {

@@ -9,7 +9,7 @@ export default defineConfig([
       "./tailwind.config.js",
       "./metro.config.js",
       "./hooks/useThemeColor.ts",
-      "./components/ThemedText.tsx"
+      "./components/ThemedText.tsx",
     ],
   },
   {

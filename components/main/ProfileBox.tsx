@@ -16,8 +16,11 @@ interface ProfileBoxProps {
 const ProfileBox = ({ profileData }: ProfileBoxProps) => {
   const getFormattedDate = () => {
     const today = new Date();
-    console.log(today);
-    const options = { month: "long", day: "numeric", weekday: "long" };
+    const options: Intl.DateTimeFormatOptions = {
+      month: "long",
+      day: "numeric",
+      weekday: "long",
+    };
     const formattedDate = new Intl.DateTimeFormat("ko-KR", options).format(
       today
     );

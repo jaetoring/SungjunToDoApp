@@ -5,6 +5,8 @@ import React from "react";
 import profileImage from "../../assets/images/testImg/blackSpirit.jpg";
 import medalImage from "../../assets/images/testImg/testMedal.png";
 
+import { jest } from "@jest/globals";
+
 jest.mock("react-native/Libraries/Image/Image", () => "Image");
 
 describe("ProfileBox", () => {
@@ -17,7 +19,11 @@ describe("ProfileBox", () => {
 
   const getFormattedDate = () => {
     const today = new Date();
-    const options = { month: "long", day: "numeric", weekday: "long" };
+    const options: Intl.DateTimeFormatOptions = {
+      month: "long",
+      day: "numeric",
+      weekday: "long",
+    };
     return new Intl.DateTimeFormat("ko-KR", options).format(today);
   };
 

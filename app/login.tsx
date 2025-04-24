@@ -6,9 +6,9 @@ import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
-import bangersFont from "../../assets/fonts/Bangers-Regular.ttf";
-import googleIcon from "../../assets/images/googleIcon.png";
-import throwDiceImg from "../../assets/images/throwDice.png";
+import bangersFont from "../assets/fonts/Bangers-Regular.ttf";
+import googleIcon from "../assets/images/googleIcon.png";
+import throwDiceImg from "../assets/images/throwDice.png";
 
 export default function LoginScreen() {
   const { login } = useAuth();

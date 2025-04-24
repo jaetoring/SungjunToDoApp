@@ -13,6 +13,7 @@ const BoxBg = ({ children }: { children: React.ReactNode }) => {
         shadowOffset: { width: 0, height: 4 }, // iOS
         shadowOpacity: 0.2, // iOS
         shadowRadius: 6,
+        marginBottom: 20,
       }}
       className="flex-row w-full rounded-xl"
     >

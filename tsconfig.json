@@ -7,7 +7,7 @@
         "./*"
       ]
     },
-    "types": ["eslint"]
+    "types": ["eslint", "jest"]
   },
   "include": [
     "**/*.ts",

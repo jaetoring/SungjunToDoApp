@@ -20,7 +20,7 @@ const TodoListBox = ({ todoData }: TodoListBoxProps) => {
       <View className="w-full flex-col px-5 py-4">
         <Text className="text-3xl font-bold mb-4">TodoList</Text>
         <View className="w-full">
-          {todoData.map((todo, _) => (
+          {todoData.map((todo) => (
             <TodoBox todoProps={todo} />
           ))}
         </View>

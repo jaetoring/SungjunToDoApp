@@ -1,8 +1,10 @@
 import Header from "@/components/layout/header";
 import ExpBox from "@/components/main/ExpBox";
 import ProfileBox from "@/components/main/ProfileBox";
+import TodoListBox from "@/components/main/TodoListBox";
 import { DummyExpData } from "@/data/mainExpData";
 import { mainProfileData } from "@/data/mainProfileData";
+import { TodoListData } from "@/data/mainTodoData";
 import React from "react";
 import { View } from "react-native";
 
@@ -26,6 +28,8 @@ const HomeScreen = () => {
           maxExp={MaxExp}
           currentExp={currentExp}
         />
+        {/* 투두리스트 박스 */}
+        <TodoListBox todoData={TodoListData} />
       </View>
     </>
   );

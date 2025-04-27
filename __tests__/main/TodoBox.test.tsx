@@ -24,7 +24,7 @@ describe("TodoBox", () => {
 
   // todo 제목과 경험치 렌더링
   it("todo 제목과 경험치를 올바르게 렌더링한다.", () => {
-    const { getByText } = render(<TodoBox key={1} todoProps={todoData[0]} />);
+    const { getByText } = render(<TodoBox key={1} todoData={todoData[0]} />);
 
     expect(getByText("미완료된 todo")).toBeTruthy();
     expect(getByText("+5 XP")).toBeTruthy();
@@ -32,26 +32,26 @@ describe("TodoBox", () => {
 
   // todo가 미완료일 때 스탬프 버튼 출력
   it("todo가 미완료 상태면 스탬프 버튼 이미지를 출력한다.", () => {
-    const { getByTestId } = render(<TodoBox todoProps={todoData[0]} />);
+    const { getByTestId } = render(<TodoBox todoData={todoData[0]} />);
 
     expect(getByTestId("stamp-image")).toBeTruthy();
   });
 
   // todo가 완료일 때 완료 스탬프 출력
   it("todo가 완료 상태면 완료 스탬프 이미지를 출력한다.", () => {
-    const { getByTestId } = render(<TodoBox todoProps={todoData[1]} />);
+    const { getByTestId } = render(<TodoBox todoData={todoData[1]} />);
 
     expect(getByTestId("complete-stamp-image")).toBeTruthy();
   });
 
   // 조건부로 오버레이 출력
   it("isDone의 boolean값으로 오버레이를 출력한다.", () => {
-    const { getByTestId } = render(<TodoBox todoProps={todoData[1]} />);
+    const { getByTestId } = render(<TodoBox todoData={todoData[1]} />);
 
     expect(getByTestId("overlay")).toBeTruthy();
 
     const { queryByTestId: queryOverlay } = render(
-      <TodoBox todoProps={todoData[0]} />
+      <TodoBox todoData={todoData[0]} />
     );
 
     expect(queryOverlay("overlay")).toBeNull();

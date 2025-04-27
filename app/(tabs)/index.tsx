@@ -9,25 +9,14 @@ import React from "react";
 import { View } from "react-native";
 
 const HomeScreen = () => {
-  const profileData = mainProfileData;
-  const MaxExp = DummyExpData.maxExp;
-  const currentExp = DummyExpData.currentExp;
-
   return (
     <>
       <Header />
       <View className="h-full w-full flex p-6">
         {/* 프로필 박스 */}
-        <ProfileBox
-          profileData={profileData.profileData}
-          date={profileData.dummyDate}
-        />
+        <ProfileBox profileData={mainProfileData} />
         {/* 경험치 박스 */}
-        <ExpBox
-          level={profileData.profileData.level}
-          maxExp={MaxExp}
-          currentExp={currentExp}
-        />
+        <ExpBox expData={DummyExpData} />
         {/* 투두리스트 박스 */}
         <TodoListBox todoData={TodoListData} />
       </View>

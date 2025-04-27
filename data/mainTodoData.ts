@@ -1,4 +1,6 @@
-export const TodoListData = [
+import { TodoList } from "../types/todoList";
+
+export const TodoListData: TodoList[] = [
     {
         id: 1,
         title: "코드 구현하기",

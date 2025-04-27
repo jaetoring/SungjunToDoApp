@@ -1,17 +1,10 @@
+import { TodoList } from "@/types/todoList";
 import React from "react";
 import { Text, View } from "react-native";
 import BoxBg from "../common/BoxBg";
 import TodoBox from "./TodoBox";
-
-interface TodoListData {
-  id: number;
-  title: string;
-  description: string;
-  isDone: boolean;
-}
-
 interface TodoListBoxProps {
-  todoData: TodoListData[];
+  todoData: TodoList[];
 }
 
 const TodoListBox = ({ todoData }: TodoListBoxProps) => {
@@ -21,7 +14,7 @@ const TodoListBox = ({ todoData }: TodoListBoxProps) => {
         <Text className="text-3xl font-bold mb-4">TodoList</Text>
         <View className="w-full">
           {todoData.map((todo, _) => (
-            <TodoBox todoProps={todo} />
+            <TodoBox key={todo.id} todoData={todo} />
           ))}
         </View>
       </View>

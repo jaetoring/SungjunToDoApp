@@ -1,16 +1,9 @@
-import { Image, ImageSourcePropType, Text, View } from "react-native";
+import { ProfileType } from "@/types/profileType";
+import { Image, Text, View } from "react-native";
 import BoxBg from "../common/BoxBg";
 
-interface ProfileDataProps {
-  level: number;
-  name: string;
-  profileImage: ImageSourcePropType;
-  medalImage: ImageSourcePropType;
-}
-
 interface ProfileBoxProps {
-  date: string;
-  profileData: ProfileDataProps;
+  profileData: ProfileType;
 }
 
 const ProfileBox = ({ profileData }: ProfileBoxProps) => {

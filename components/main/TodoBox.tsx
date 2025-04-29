@@ -1,16 +1,25 @@
 import { TodoList } from "@/types/todoList";
 import { LinearGradient } from "expo-linear-gradient";
-import { Image, Text, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import CompleteStamp from "../../assets/images/common/completeStamp.png";
 import Stamp from "../../assets/images/common/stamp.png";
 
 interface TodoBoxProps {
   todoData: TodoList;
+  onPress?: () => void;
 }
 
-const TodoBox = ({ todoData }: TodoBoxProps) => {
+const TodoBox = ({ todoData, onPress }: TodoBoxProps) => {
   return (
-    <View key={todoData.id} className="relative mb-2">
+    <TouchableOpacity
+      key={todoData.id}
+      onPress={onPress}
+      style={{
+        marginBottom: 10,
+        backgroundColor: "rgba(0, 0, 0, 0.1)",
+        zIndex: 3,
+      }}
+    >
       <LinearGradient
         colors={["#FF91B0", "#FFBE84"]}
         start={{ x: 0, y: 0 }}
@@ -38,7 +47,7 @@ const TodoBox = ({ todoData }: TodoBoxProps) => {
               right: 5,
               top: "50%",
               transform: [{ translateY: -22 }],
-              zIndex: 10,
+              zIndex: 2,
             }}
             testID="complete-stamp-image"
           />
@@ -58,7 +67,7 @@ const TodoBox = ({ todoData }: TodoBoxProps) => {
           testID="overlay"
         />
       )}
-    </View>
+    </TouchableOpacity>
   );
 };
 export default TodoBox;

@@ -1,3 +1,4 @@
+import { useTodoStore } from "@/store/todoStore";
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import { Modal, Text, TouchableWithoutFeedback, View } from "react-native";
@@ -7,17 +8,22 @@ import ModalTitle from "../common/modalTitle";
 
 interface TodoModalProps {
   visible: boolean;
-  todo: { title: string; description: string } | null;
   onClose: () => void;
-  mode: "create" | "read" | "update";
   onCreate?: (title: string, description: string) => void;
   onUpdate?: (title: string, description: string) => void;
   onDelete?: () => void;
 }
 
-const TodoModal = ({ visible, todo, onClose }: TodoModalProps) => {
+const TodoModal = ({
+  visible,
+  onClose,
+  onCreate,
+  onUpdate,
+  onDelete,
+}: TodoModalProps) => {
   const [title, setTitle] = useState("");
-  const [description, setDescription] = React.useState("");
+  const [description, setDescription] = useState("");
+  const { todo, mode, setMode } = useTodoStore();
 
   useEffect(() => {
     if (todo) {
@@ -28,6 +34,16 @@ const TodoModal = ({ visible, todo, onClose }: TodoModalProps) => {
       setDescription("");
     }
   }, [todo, visible]);
+
+  const handleUpdate = () => {
+    console.log(
+      `이 후 해당 값으로 수정되야 해! title=${title} description=${description}`
+    );
+  };
+
+  const handleDelete = () => {
+    console.log("해당 todo.id에 맞게 삭제");
+  };
 
   return (
     <Modal
@@ -49,14 +65,32 @@ const TodoModal = ({ visible, todo, onClose }: TodoModalProps) => {
                 borderRadius: 10,
               }}
             >
-              {todo && (
+              {mode === "isDone" ? (
+                <View>
+                  <Text className="text-3xl font-bold text-center p-2">
+                    Todo를 완료할래요?
+                  </Text>
+                  <ModalBtn label="삭제" onPress={handleDelete} />
+                </View>
+              ) : (
                 <>
                   <Text className="text-3xl font-bold text-center p-2">
                     Todo
                   </Text>
-                  <ModalTitle title={todo.title} />
-                  <ModalDesc description={todo.description} />
-                  <ModalBtn label="등록" onPress={onClose} />
+                  <ModalTitle title={title} onChange={setTitle} />
+                  <ModalDesc
+                    description={description}
+                    onChange={setDescription}
+                  />
+                  {mode === "read" && todo?.isDone === false && (
+                    <View className="flex-row justify-between">
+                      <ModalBtn label="수정" onPress={handleUpdate} />
+                      <ModalBtn label="삭제" onPress={handleDelete} />
+                    </View>
+                  )}
+                  {mode === "create" && (
+                    <ModalBtn label="등록" onPress={onClose} />
+                  )}
                 </>
               )}
             </LinearGradient>

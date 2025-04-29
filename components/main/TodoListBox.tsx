@@ -1,3 +1,4 @@
+import { useTodoStore } from "@/store/todoStore";
 import { TodoList } from "@/types/todoList";
 import React, { useState } from "react";
 import { Text, View } from "react-native";
@@ -10,17 +11,20 @@ interface TodoListBoxProps {
 
 const TodoListBox = ({ todoData }: TodoListBoxProps) => {
   const [modalOn, setModalOn] = useState(false);
-  const [selectedTodo, setSelectedTodo] = useState<TodoList | null>(null);
+  const setTodo = useTodoStore((state) => state.setTodo);
+  const setMode = useTodoStore((state) => state.setMode);
 
   const handleTodoModal = (todo: TodoList) => {
     console.log("들어오나");
     setModalOn(true);
-    setSelectedTodo(todo);
+    setTodo(todo);
+    setMode("read");
   };
 
   const closeModal = () => {
     setModalOn(false);
-    setSelectedTodo(null);
+    setTodo(null);
+    setMode("read");
   };
 
   return (
@@ -41,12 +45,7 @@ const TodoListBox = ({ todoData }: TodoListBoxProps) => {
         <View className="absolute right-0 bottom-0 w-full h-full bg-[#FF91B0] opacity-30 rounded-[20px]" />
       </BoxBg>
 
-      <TodoModal
-        mode="create"
-        visible={modalOn}
-        todo={selectedTodo}
-        onClose={closeModal}
-      />
+      <TodoModal visible={modalOn} onClose={closeModal} />
     </>
   );
 };

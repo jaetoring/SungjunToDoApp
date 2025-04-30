@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Text, View } from "react-native";
 import BoxBg from "../common/BoxBg";
 import TodoBox from "./TodoBox";
-import TodoModal from "./todoModal";
+import TodoModal from "./TodoModal";
 interface TodoListBoxProps {
   todoData: TodoList[];
 }
@@ -15,7 +15,6 @@ const TodoListBox = ({ todoData }: TodoListBoxProps) => {
   const setMode = useTodoStore((state) => state.setMode);
 
   const handleTodoModal = (todo: TodoList) => {
-    console.log("들어오나");
     setModalOn(true);
     setTodo(todo);
     setMode("read");

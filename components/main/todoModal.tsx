@@ -9,21 +9,12 @@ import ModalTitle from "../common/modalTitle";
 interface TodoModalProps {
   visible: boolean;
   onClose: () => void;
-  onCreate?: (title: string, description: string) => void;
-  onUpdate?: (title: string, description: string) => void;
-  onDelete?: () => void;
 }
 
-const TodoModal = ({
-  visible,
-  onClose,
-  onCreate,
-  onUpdate,
-  onDelete,
-}: TodoModalProps) => {
+const TodoModal = ({ visible, onClose }: TodoModalProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const { todo, mode, setMode } = useTodoStore();
+  const { todo, mode } = useTodoStore();
 
   useEffect(() => {
     if (todo) {
@@ -52,9 +43,12 @@ const TodoModal = ({
       transparent={true}
       onRequestClose={onClose}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
+      <TouchableWithoutFeedback onPress={onClose} testID="close-modal">
         <View className="flex-1 justify-center items-center bg-black/50">
-          <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+          <TouchableWithoutFeedback
+            onPress={(e) => e?.stopPropagation?.()}
+            testID="modal-content"
+          >
             <LinearGradient
               start={{ x: 0.5, y: 0 }}
               end={{ x: 0.5, y: 1 }}

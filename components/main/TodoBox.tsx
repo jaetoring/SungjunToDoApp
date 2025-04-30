@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import CompleteStamp from "../../assets/images/common/completeStamp.png";
 import Stamp from "../../assets/images/common/stamp.png";
-import TodoModal from "./todoModal";
+import TodoModal from "./TodoModal";
 
 interface TodoBoxProps {
   todoData: TodoList;

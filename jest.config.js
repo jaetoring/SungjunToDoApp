@@ -8,6 +8,10 @@ module.exports = {
       lines: 80,
     },
   },
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/$1',
+  },
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   coveragePathIgnorePatterns: [
     "/hooks/useThemeColor.ts",
     "/components/ThemedText.tsx",

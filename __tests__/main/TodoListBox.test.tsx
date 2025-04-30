@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 import React from "react";
 
 import TodoListBox from "@/components/main/TodoListBox";
@@ -34,5 +34,29 @@ describe("TodoListBox", () => {
     const { getByText } = render(<TodoListBox todoData={todoListData} />);
     expect(getByText("test1")).toBeTruthy();
     expect(getByText("test2")).toBeTruthy();
+  });
+
+  // 모달창 오픈
+  it("TodoBox 클릭 시 모달이 열리는지 확인한다", async () => {
+    const { getByText, findByText } = render(
+      <TodoListBox todoData={todoListData} />
+    );
+    fireEvent.press(getByText("test1"));
+    const modalTitle = await findByText("Todo");
+    expect(modalTitle).toBeTruthy();
+  });
+
+  // 모달 클로즈
+  it("모달을 닫을 시 닫히는지 확인한다", async () => {
+    const { getByText, getByTestId, findByText, queryByText } = render(
+      <TodoListBox todoData={todoListData} />
+    );
+
+    fireEvent.press(getByText("test1"));
+    const modalTitle = await findByText("Todo");
+    expect(modalTitle).toBeTruthy();
+
+    fireEvent.press(getByTestId("close-modal"));
+    expect(queryByText("Todo")).toBeNull();
   });
 });

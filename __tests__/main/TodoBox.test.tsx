@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 import React from "react";
 
 import TodoBox from "@/components/main/TodoBox";
@@ -55,5 +55,19 @@ describe("TodoBox", () => {
     );
 
     expect(queryOverlay("overlay")).toBeNull();
+  });
+
+  // 스탬프 버튼 클릭 시 모달이 열리고 닫히기
+  it("스탬프 버튼을 클릭 시 모달이 열리고, 모달을 닫을 시 닫히는지 확인한다", async () => {
+    const { getByTestId, findByText, queryByText } = render(
+      <TodoBox todoData={todoData[0]} />
+    );
+
+    fireEvent.press(getByTestId("stamp-press"));
+    const modalTitle = await findByText("Todo를 완료할래요?");
+    expect(modalTitle).toBeTruthy();
+
+    fireEvent.press(getByTestId("close-modal"));
+    expect(queryByText("Todo")).toBeNull();
   });
 });

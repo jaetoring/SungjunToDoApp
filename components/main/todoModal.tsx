@@ -64,7 +64,7 @@ const TodoModal = ({ visible, onClose }: TodoModalProps) => {
                   <Text className="text-3xl font-bold text-center p-2">
                     Todo를 완료할래요?
                   </Text>
-                  <ModalBtn label="삭제" onPress={handleDelete} />
+                  <ModalBtn label="완료" onPress={handleDelete} />
                 </View>
               ) : (
                 <>

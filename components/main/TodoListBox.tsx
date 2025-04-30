@@ -1,10 +1,10 @@
+import TodoModal from "@/components/main/TodoModal";
 import { useTodoStore } from "@/store/todoStore";
 import { TodoList } from "@/types/todoList";
 import React, { useState } from "react";
 import { Text, View } from "react-native";
 import BoxBg from "../common/BoxBg";
 import TodoBox from "./TodoBox";
-import TodoModal from "./TodoModal";
 interface TodoListBoxProps {
   todoData: TodoList[];
 }

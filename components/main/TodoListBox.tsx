@@ -1,4 +1,4 @@
-import TodoModal from "./TodoModal";
+import TodoModal from "@/components/main/TodoModal";
 import { useTodoStore } from "@/store/todoStore";
 import { TodoList } from "@/types/todoList";
 import React, { useState } from "react";

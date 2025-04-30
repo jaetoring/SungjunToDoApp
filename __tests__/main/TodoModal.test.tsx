@@ -1,7 +1,7 @@
+import TodoModal from "@/components/main/TodoModal";
 import { useTodoStore } from "@/store/todoStore";
 import { jest } from "@jest/globals";
 import { fireEvent, render } from "@testing-library/react-native";
-import TodoModal from "@/components/main/TodoModal";
 
 jest.mock("@/store/todoStore");
 

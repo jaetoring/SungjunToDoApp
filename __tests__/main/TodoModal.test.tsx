@@ -1,7 +1,7 @@
-import TodoModal from "@/components/main/TodoModal";
 import { useTodoStore } from "@/store/todoStore";
 import { jest } from "@jest/globals";
 import { fireEvent, render } from "@testing-library/react-native";
+import TodoModal from "../../components/main/TodoModal";
 
 jest.mock("@/store/todoStore");
 
@@ -35,7 +35,7 @@ describe("TodoModal", () => {
     );
 
     expect(getByText("Todo를 완료할래요?")).toBeTruthy();
-    expect(getByText("삭제")).toBeTruthy();
+    expect(getByText("완료")).toBeTruthy();
   });
 
   // 읽기 모달창 생성

@@ -6,9 +6,11 @@ import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
+
 import bangersFont from "../assets/fonts/Bangers-Regular.ttf";
 import googleIcon from "../assets/images/googleIcon.png";
 import throwDiceImg from "../assets/images/throwDice.png";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function LoginScreen() {
   const { login } = useAuth();
@@ -29,6 +31,7 @@ export default function LoginScreen() {
     if (!fontsLoaded) return;
     if (response?.type === "success") {
       login();
+      console.log("after login:", useAuthStore.getState().isLoggedIn);
       router.replace("/");
     }
   }, [response]);

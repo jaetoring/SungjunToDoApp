@@ -41,7 +41,6 @@ export default function LoginScreen() {
 
   return (
     <LayoutBg>
-      <View className="flex-1 justify-center items-center px-6">
         <TitleLogo />
         <TouchableOpacity
           className="bg-white px-3 py-2 flex-row justify-start items-center w-72 border border-gray-300"
@@ -55,7 +54,6 @@ export default function LoginScreen() {
         <View className="absolute bottom-6">
           <Text className="text-xs text-gray-400">MoonMiSae</Text>
         </View>
-      </View>
     </LayoutBg>
   );
 }

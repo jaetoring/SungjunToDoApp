@@ -1,3 +1,4 @@
+import TestImg from "@/assets/images/testImg/blackSpirit.jpg";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -17,7 +18,7 @@ export default function IndexPage() {
 
   useEffect(() => {
     if (!isReady) return;
-    router.replace(isLoggedIn ? "/(tabs)" : "/login");
+    router.replace(isLoggedIn ? "/(tabs)" : "/edit");
   }, [isReady, isLoggedIn]);
 
   if (!isReady) {
@@ -31,7 +32,7 @@ export default function IndexPage() {
         }}
       >
         <Image
-          source={require("@/assets/images/testImg/blackSpirit.jpg")}
+          source={TestImg}
           style={{ width: 200, height: 200, marginBottom: 20 }}
           resizeMode="contain"
         />

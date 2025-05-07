@@ -7,7 +7,7 @@ const LayoutBg = ({ children }: { children: React.ReactNode }) => {
       start={{ x: 0.5, y: 0 }}
       end={{ x: 0.5, y: 1 }}
       style={{ flex: 1 }}
-      className="w-full rounded-xl"
+      className="w-full rounded-xl flex-1 items-center justify-center"
     >
       {children}
     </LinearGradient>

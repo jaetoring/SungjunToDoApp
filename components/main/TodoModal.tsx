@@ -1,10 +1,10 @@
 import { useTodoStore } from "@/store/todoStore";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal, Text, TouchableWithoutFeedback, View } from "react-native";
 import ModalBtn from "../common/ModalBtn";
 import ModalDesc from "../common/ModalDesc";
-import ModalTitle from "../common/ModalTitle"
+import ModalTitle from "../common/ModalTitle";
 
 interface TodoModalProps {
   visible: boolean;
@@ -26,14 +26,26 @@ const TodoModal = ({ visible, onClose }: TodoModalProps) => {
     }
   }, [todo, visible]);
 
+  // todo 수정
   const handleUpdate = () => {
     console.log(
       `이 후 해당 값으로 수정되야 해! title=${title} description=${description}`
     );
   };
 
+  // todo 삭제
   const handleDelete = () => {
     console.log("해당 todo.id에 맞게 삭제");
+  };
+
+  // todo 추가
+  const handleAdd = () => {
+    console.log("새로운 Todo 추가");
+  };
+
+  // todo 완료
+  const handleComplete = () => {
+    console.log("해당 Todo 완료");
   };
 
   return (
@@ -64,7 +76,7 @@ const TodoModal = ({ visible, onClose }: TodoModalProps) => {
                   <Text className="text-3xl font-bold text-center p-2">
                     Todo를 완료할래요?
                   </Text>
-                  <ModalBtn label="완료" onPress={handleDelete} />
+                  <ModalBtn label="완료" onPress={handleComplete} />
                 </View>
               ) : (
                 <>
@@ -83,7 +95,7 @@ const TodoModal = ({ visible, onClose }: TodoModalProps) => {
                     </View>
                   )}
                   {mode === "create" && (
-                    <ModalBtn label="등록" onPress={onClose} />
+                    <ModalBtn label="등록" onPress={handleAdd} />
                   )}
                 </>
               )}

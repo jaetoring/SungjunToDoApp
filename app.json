@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mycoolredirect",
+    "scheme": "todoo",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

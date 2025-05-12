@@ -1,30 +1,43 @@
 import { useAuth } from "@/hooks/useAuth";
-import * as Google from "expo-auth-session/providers/google";
+import { useAuthRequest } from "expo-auth-session";
 import { useFonts } from "expo-font";
 import { useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { useEffect } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
 import LayoutBg from "@/components/common/LayoutBg";
 import TitleLogo from "@/components/common/TitleLogo";
-import * as WebBrowser from "expo-web-browser";
 import bangersFont from "../assets/fonts/Bangers-Regular.ttf";
 import googleIcon from "../assets/images/googleIcon.png";
 
 WebBrowser.maybeCompleteAuthSession();
 
+const discovery = {
+  authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
+  tokenEndpoint: "https://oauth2.googleapis.com/token",
+  revocationEndpoint: "https://oauth2.googleapis.com/revoke",
+};
+
 export default function LoginScreen() {
   const { login } = useAuth();
   const router = useRouter();
+  const testId = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB;
+  const redirectUri = process.env.EXPO_PUBLIC_REDIRECT_URL;
 
   const [fontsLoaded] = useFonts({
     Bangers: bangersFont,
   });
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_ANDROID,
-  });
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: testId || "",
+      redirectUri: redirectUri || "",
+      scopes: ["profile", "email"],
+      responseType: "code",
+    },
+    discovery
+  );
 
   useEffect(() => {
     console.log(require("expo-linking").createURL());
@@ -37,7 +50,7 @@ export default function LoginScreen() {
       // 예를 들어, Firebase Auth에 연동하여 signInWithCredential을 사용할 수 있습니다.
       // idToken을 사용하여 구글 계정 정보를 가져오는 방법도 있습니다 [[4]](https://blog.pumpkin-raccoon.com/110).
       login();
-      router.replace("/");
+      router.replace("/(tabs)");
     } else if (response?.type === "error") {
       console.error("Authentication error:", response.error);
       // 오류 처리 로직

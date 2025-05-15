@@ -4,6 +4,7 @@ import { TodoList } from "@/types/todoList";
 import React, { useState } from "react";
 import { Text, View } from "react-native";
 import BoxBg from "../common/BoxBg";
+import TodoAddBtn from "../common/TodoAddBtn";
 import TodoBox from "./TodoBox";
 interface TodoListBoxProps {
   todoData: TodoList[];
@@ -26,10 +27,16 @@ const TodoListBox = ({ todoData }: TodoListBoxProps) => {
     setMode("read");
   };
 
+  const hadleAddTodo = () => {
+    setModalOn(true);
+    setTodo(null);
+    setMode("create");
+  };
+
   return (
     <>
       <BoxBg>
-        <View className="w-full flex-col px-5 py-4">
+        <View className="w-full flex-col px-5 pt-4">
           <Text className="text-3xl font-bold mb-4">TodoList</Text>
           <View className="w-full">
             {todoData.map((todo) => (
@@ -41,9 +48,11 @@ const TodoListBox = ({ todoData }: TodoListBoxProps) => {
             ))}
           </View>
         </View>
-        <View className="absolute right-0 bottom-0 w-full h-full bg-[#FF91B0] opacity-30 rounded-[20px]" />
-      </BoxBg>
 
+        <View className="items-center justify-center mb-4">
+          <TodoAddBtn onPress={() => hadleAddTodo()} />
+        </View>
+      </BoxBg>
       <TodoModal visible={modalOn} onClose={closeModal} />
     </>
   );

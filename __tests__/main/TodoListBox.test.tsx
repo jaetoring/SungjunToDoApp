@@ -59,4 +59,14 @@ describe("TodoListBox", () => {
     fireEvent.press(getByTestId("close-modal"));
     expect(queryByText("Todo")).toBeNull();
   });
+
+  // Todo 추가 버튼 클릭
+  it("Todo 추가 버튼 클릭 시 추가 모달이 열리는지 확인한다", async () => {
+    const { getByText, findByText } = render(
+      <TodoListBox todoData={todoListData} />
+    );
+    fireEvent.press(getByText("+"));
+    const modalTitle = await findByText("Todo");
+    expect(modalTitle).toBeTruthy();
+  });
 });

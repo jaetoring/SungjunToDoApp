@@ -5,15 +5,15 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mycoolredirect",
+    "scheme": "todoo",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.moonung.todoo"
+      "bundleIdentifier": "com.todoo.app"
     },
     "android": {
-      "package": "com.moonung.todoo",
+      "package": "com.todoo.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -39,6 +39,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "49aad167-a83a-4cf9-8f1d-d4123e8f434e"
+      }
     }
   }
 }

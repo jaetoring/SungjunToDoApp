@@ -1,5 +1,6 @@
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useAuthRequest } from "expo-auth-session";
+// import * as Google from "expo-auth-session/providers/google";
 import { useFonts } from "expo-font";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
@@ -20,35 +21,51 @@ const discovery = {
 };
 
 export default function LoginScreen() {
-  const { login } = useAuth();
+  const login = useAuthStore((state) => state.login);
   const router = useRouter();
   const testId = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB;
   const redirectUri = process.env.EXPO_PUBLIC_REDIRECT_URL;
+  // const redirectUri = "https://auth.expo.io/@moonsungjun/todoo";
 
   const [fontsLoaded] = useFonts({
     Bangers: bangersFont,
   });
 
-  const [request, response, promptAsync] = useAuthRequest(
+  // 범용성 소셜 로그인용
+  const [, response, promptAsync] = useAuthRequest(
     {
       clientId: testId || "",
       redirectUri: redirectUri || "",
-      scopes: ["profile", "email"],
+      scopes: ["openid", "profile", "email"],
       responseType: "code",
     },
     discovery
   );
 
+  // 구글로그인용
+  // const [request, response, promptAsync] = Google.useAuthRequest({
+  //   androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_ANDROID,
+  //   webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB,
+  //   scopes: ["profile", "email"],
+  //   redirectUri: makeRedirectUri({
+  //     native: "https://auth.expo.io/@moonsungjun/todoo",
+  //   }),
+  // });
+
   useEffect(() => {
-    console.log(require("expo-linking").createURL());
     if (!fontsLoaded) return;
     if (response?.type === "success") {
-      const { authentication } = response;
-      console.log("Authentication successful:", authentication);
-      // 여기서 authentication.idToken 또는 authentication.accessToken을 사용하여
-      // 백엔드에서 사용자 인증을 처리하거나 사용자 정보를 가져올 수 있습니다.
-      // 예를 들어, Firebase Auth에 연동하여 signInWithCredential을 사용할 수 있습니다.
-      // idToken을 사용하여 구글 계정 정보를 가져오는 방법도 있습니다 [[4]](https://blog.pumpkin-raccoon.com/110).
+      const { code } = response.params;
+      console.log("Authentication successful:", code);
+      // axios
+      //   .post("/api/user/...", {
+      //     code,
+      //     redirectUri,
+      //   })
+      //   .then((response) => {
+      //     console.log("로그인 정보 전송");
+      //   });
+
       login();
       router.replace("/(tabs)");
     } else if (response?.type === "error") {

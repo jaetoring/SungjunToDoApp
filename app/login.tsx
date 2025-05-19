@@ -1,102 +1,113 @@
-import { useAuthStore } from "@/store/useAuthStore";
-import { useAuthRequest } from "expo-auth-session";
-// import * as Google from "expo-auth-session/providers/google";
-import { useFonts } from "expo-font";
 import { useRouter } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
-import { useEffect } from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 
+import FormInput from "@/components/common/FormInput";
 import LayoutBg from "@/components/common/LayoutBg";
 import TitleLogo from "@/components/common/TitleLogo";
-import bangersFont from "../assets/fonts/Bangers-Regular.ttf";
-import googleIcon from "../assets/images/googleIcon.png";
-
-WebBrowser.maybeCompleteAuthSession();
-
-const discovery = {
-  authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
-  tokenEndpoint: "https://oauth2.googleapis.com/token",
-  revocationEndpoint: "https://oauth2.googleapis.com/revoke",
-};
+import { supabase } from "@/supabaseClient";
 
 export default function LoginScreen() {
-  const login = useAuthStore((state) => state.login);
   const router = useRouter();
-  const testId = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB;
-  const redirectUri = process.env.EXPO_PUBLIC_REDIRECT_URL;
-  // const redirectUri = "https://auth.expo.io/@moonsungjun/todoo";
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [fontsLoaded] = useFonts({
-    Bangers: bangersFont,
-  });
+  const handleLogin = async () => {
+    console.log("로그인 시도:", email, password);
 
-  // 범용성 소셜 로그인용
-  const [, response, promptAsync] = useAuthRequest(
-    {
-      clientId: testId || "",
-      redirectUri: redirectUri || "",
-      scopes: ["openid", "profile", "email"],
-      responseType: "code",
-    },
-    discovery
-  );
+    const { data: loginData, error: loginError } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-  // 구글로그인용
-  // const [request, response, promptAsync] = Google.useAuthRequest({
-  //   androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_ANDROID,
-  //   webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB,
-  //   scopes: ["profile", "email"],
-  //   redirectUri: makeRedirectUri({
-  //     native: "https://auth.expo.io/@moonsungjun/todoo",
-  //   }),
-  // });
-
-  useEffect(() => {
-    if (!fontsLoaded) return;
-    if (response?.type === "success") {
-      const { code } = response.params;
-      console.log("Authentication successful:", code);
-      // axios
-      //   .post("/api/user/...", {
-      //     code,
-      //     redirectUri,
-      //   })
-      //   .then((response) => {
-      //     console.log("로그인 정보 전송");
-      //   });
-
-      login();
-      router.replace("/(tabs)");
-    } else if (response?.type === "error") {
-      console.error("Authentication error:", response.error);
-      // 오류 처리 로직
-    } else if (response?.type === "dismiss") {
-      console.log("Authentication dismissed");
-      // 사용자가 로그인 창을 닫았을 때 처리
+    if (loginError) {
+      console.error("로그인 실패", loginError.message);
+      return;
     }
-  }, [response]);
 
-  if (!fontsLoaded) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <Text>Loading Fonts..</Text>
-      </View>
-    );
-  }
+    console.log("로그인 성공", loginData);
+
+    const { data: sessionData, error: getUserError } =
+      await supabase.auth.getUser();
+
+    if (getUserError || !sessionData?.user) {
+      console.error("유저 정보 조회 실패", getUserError?.message);
+      return;
+    }
+
+    const user = sessionData.user;
+
+    // 🔍 user 테이블에 이미 존재하는지 확인
+    const { data: existingUsers, error: selectError } = await supabase
+      .from("user")
+      .select("user_id")
+      .eq("user_id", user.id);
+
+    if (selectError) {
+      console.error("user 테이블 조회 실패", selectError.message);
+      return;
+    }
+
+    if (existingUsers.length === 0) {
+      const { error: insertError } = await supabase.from("user").insert({
+        user_id: user.id,
+        email: user.email,
+        created_at: user.created_at, // 🔐 진짜 가입일
+        updated_at: user.created_at,
+      });
+
+      if (insertError) {
+        console.error("user 테이블 insert 실패", insertError.message);
+      } else {
+        console.log("user 테이블에 유저 정보 저장 완료");
+      }
+    } else {
+      console.log("이미 user 테이블에 유저 정보가 있음");
+    }
+
+    router.push("/(tabs)");
+  };
+
+  const handleMoveSingup = () => {
+    router.push("/signup");
+    console.log("회원가입 페이지로 이동");
+  };
 
   return (
     <LayoutBg>
       <TitleLogo />
-      <TouchableOpacity
-        className="bg-white px-3 py-2 flex-row justify-start items-center w-72 border border-gray-300"
-        activeOpacity={0.85}
-        onPress={() => promptAsync()}
-      >
-        <Image source={googleIcon} className="w-8 h-8 mr-3" />
-        <Text className="text-lg font-bold">SIGN UP WITH GOOGLE</Text>
-      </TouchableOpacity>
+      <View className="w-full px-20">
+        {/* 이메일 */}
+        <FormInput
+          value={email}
+          onChangeText={setEmail}
+          placeholder="이메일"
+          keyboardType="email-address"
+        />
 
+        {/* 비밀번호 */}
+        <FormInput
+          value={password}
+          onChangeText={setPassword}
+          placeholder="비밀번호"
+          secureTextEntry
+        />
+
+        <TouchableOpacity
+          onPress={handleLogin}
+          className="w-full bg-pink-400 rounded-xl py-4 mb-4"
+        >
+          <Text className="text-white text-center font-semibold">로그인</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => handleMoveSingup()}>
+          <Text className="text-gray-600">
+            계정이 없으신가요?{" "}
+            <Text className="text-pink-500 font-bold">회원가입</Text>
+          </Text>
+        </TouchableOpacity>
+      </View>
       <View className="absolute bottom-6">
         <Text className="text-xs text-gray-400">MoonMiSae</Text>
       </View>

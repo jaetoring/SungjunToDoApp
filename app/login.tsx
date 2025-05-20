@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 
 import FormInput from "@/components/common/FormInput";
 import LayoutBg from "@/components/common/LayoutBg";
@@ -22,7 +22,7 @@ export default function LoginScreen() {
       });
 
     if (loginError) {
-      console.error("로그인 실패", loginError.message);
+      Alert.alert("로그인 실패", "아이디와 비밀번호를 확인해주세요.");
       return;
     }
 
@@ -38,7 +38,7 @@ export default function LoginScreen() {
 
     const user = sessionData.user;
 
-    // 🔍 user 테이블에 이미 존재하는지 확인
+    // user 테이블에 이미 존재하는지 확인
     const { data: existingUsers, error: selectError } = await supabase
       .from("user")
       .select("user_id")
@@ -53,7 +53,7 @@ export default function LoginScreen() {
       const { error: insertError } = await supabase.from("user").insert({
         user_id: user.id,
         email: user.email,
-        created_at: user.created_at, // 🔐 진짜 가입일
+        created_at: user.created_at,
         updated_at: user.created_at,
       });
 

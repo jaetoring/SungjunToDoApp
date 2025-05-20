@@ -21,10 +21,29 @@ const Signup = () => {
   const isFormValid = isValidEmail && isValidPassword && isPasswordMatched;
 
   const handleSignup = async () => {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const { data: existingUser, error: queryError } = await supabase
+      .from("user")
+      .select("user_id")
+      .eq("email", normalizedEmail);
+
+    if (queryError) {
+      Alert.alert("회원가입 실패", "사용자 정보를 불러오지 못했습니다.");
+      return;
+    }
+
+    if (existingUser && existingUser.length > 0) {
+      Alert.alert("중복된 이메일", "이미 가입된 이메일입니다.");
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email: normalizedEmail,
+      password,
+    });
 
     if (error) {
-      console.error("회원가입 실패:", error.message);
       Alert.alert("회원가입 실패", error.message);
       return;
     }
@@ -33,12 +52,7 @@ const Signup = () => {
       Alert.alert(
         "이메일 인증 필요",
         "로그인 하려면 이메일 인증이 필요합니다. 메일함을 확인해 주세요.",
-        [
-          {
-            text: "확인",
-            onPress: () => router.push("/login"),
-          },
-        ]
+        [{ text: "확인", onPress: () => router.push("/login") }]
       );
     }
   };
@@ -85,11 +99,13 @@ const Signup = () => {
 
         {/* 회원가입 버튼 */}
         <TouchableOpacity
+          testID="signup-button"
           onPress={handleSignup}
           className={`w-full rounded-xl py-4 mb-4 ${
             isFormValid ? "bg-pink-400" : "bg-gray-300"
           }`}
           disabled={!isFormValid}
+          accessibilityState={{ disabled: !isFormValid }}
         >
           <Text className="text-white text-center font-semibold">회원가입</Text>
         </TouchableOpacity>

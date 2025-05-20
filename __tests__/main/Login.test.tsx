@@ -41,7 +41,7 @@ describe("Login", () => {
       error: null,
     });
 
-    (supabase.from as any).mockReturnValue({
+    (supabase.from as jest.Mock).mockReturnValue({
       select: () => ({
         eq: () => Promise.resolve({ data: [], error: null }),
       }),

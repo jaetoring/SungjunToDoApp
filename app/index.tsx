@@ -18,7 +18,7 @@ export default function IndexPage() {
 
   useEffect(() => {
     if (!isReady) return;
-    router.replace(isLoggedIn ? "/(tabs)" : "/login");
+    router.replace(isLoggedIn ? "/(tabs)" : "/(tabs)/mypage");
   }, [isReady, isLoggedIn]);
 
   if (!isReady) {

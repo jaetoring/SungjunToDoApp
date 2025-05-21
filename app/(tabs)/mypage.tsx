@@ -1,11 +1,14 @@
-import { Text, View } from "react-native";
+import Header from "@/components/layout/header";
+import MyProfileBox from "@/components/mypage/MyProfileBox";
+import { ScrollView } from "react-native";
 
 const MypageScreen = () => {
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text>My Page</Text>
-      <Text>This is my page content.</Text>
-    </View>
+    <ScrollView className="flex-1 w-full">
+      <Header />
+      <MyProfileBox />
+      
+    </ScrollView>
   );
 };
 export default MypageScreen;

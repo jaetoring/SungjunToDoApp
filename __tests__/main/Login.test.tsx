@@ -1,6 +1,6 @@
 import LoginScreen from "@/app/login";
 import { supabase } from "@/supabaseClient";
-import { fireEvent, render, waitFor } from "@testing-library/react-native";
+import { act, fireEvent, render, RenderAPI, waitFor } from "@testing-library/react-native";
 import { Alert } from "react-native";
 
 const mockPush = jest.fn();
@@ -20,27 +20,40 @@ jest.mock("@/supabaseClient", () => ({
 }));
 
 describe("Login", () => {
+  const userData = {
+    id: "1",
+    email: "test@test.com",
+    password: "test123@",
+  };
+
+  const renderLogin = () => render(<LoginScreen />);
+  // 버튼이벤트 하나로 묶어둠
+  const inputAndSubmit = async (getBy: Pick<RenderAPI, "getByPlaceholderText" | "getByText">) => {
+    await act(async () => {
+      fireEvent.changeText(
+        getBy.getByPlaceholderText("이메일"),
+        userData.email
+      );
+      fireEvent.changeText(
+        getBy.getByPlaceholderText("비밀번호"),
+        userData.password
+      );
+      fireEvent.press(getBy.getByText("로그인"));
+    });
+  };
+
   beforeEach(() => jest.clearAllMocks());
 
-  // 로그인 성공 시
+  // 로그인에 성공하면 메인페이지로 이동된다.
   it("로그인에 성공하면 메인페이지로 이동된다.", async () => {
     (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
       data: {},
       error: null,
     });
-
     (supabase.auth.getUser as jest.Mock).mockResolvedValue({
-      data: {
-        user: {
-          id: "1",
-          email: "test@test.com",
-          created_at: "2025-05-20",
-          updated_at: "2025-05-20",
-        },
-      },
+      data: { user: { ...userData } },
       error: null,
     });
-
     (supabase.from as jest.Mock).mockReturnValue({
       select: () => ({
         eq: () => Promise.resolve({ data: [], error: null }),
@@ -48,30 +61,24 @@ describe("Login", () => {
       insert: () => Promise.resolve({ error: null }),
     });
 
-    const { getByPlaceholderText, getByText } = render(<LoginScreen />);
-    fireEvent.changeText(getByPlaceholderText("이메일"), "test@test.com");
-    fireEvent.changeText(getByPlaceholderText("비밀번호"), "test123@");
-    fireEvent.press(getByText("로그인"));
+    const utils = renderLogin();
+    await inputAndSubmit(utils);
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith("/(tabs)");
     });
   });
 
-  // 로그인 실패 시
-  it("로그인을 실패하면 아이디와 비밀번호를 확인하라는 alert창이 띄워진다.", async () => {
-    // ✅ Alert.alert 감시 시작
-    const alertSpy = jest.spyOn(Alert, "alert");
-
+  // 로그인 실패 시 alert를 띄운다
+  it("로그인 실패 시 alert를 띄운다", async () => {
     (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
       data: null,
       error: { message: "로그인 실패" },
     });
 
-    const { getByPlaceholderText, getByText } = render(<LoginScreen />);
-    fireEvent.changeText(getByPlaceholderText("이메일"), "test@test.com");
-    fireEvent.changeText(getByPlaceholderText("비밀번호"), "test123@");
-    fireEvent.press(getByText("로그인"));
+    const alertSpy = jest.spyOn(Alert, "alert");
+    const utils = renderLogin();
+    await inputAndSubmit(utils);
 
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith(
@@ -81,5 +88,132 @@ describe("Login", () => {
     });
 
     alertSpy.mockRestore();
+  });
+
+  // auth DB에 데이터가 없으면 console.log를 출력한다.
+  it("auth DB에 데이터가 없으면 console.log를 출력한다.", async () => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
+
+    (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
+      data: {},
+      error: null,
+    });
+    (supabase.auth.getUser as jest.Mock).mockResolvedValue({
+      data: null,
+      error: { message: "유저 조회 실패" },
+    });
+
+    const utils = renderLogin();
+    await inputAndSubmit(utils);
+
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith(
+        "유저 정보 조회 실패",
+        "유저 조회 실패"
+      );
+    });
+  });
+
+  // user 테이블에 데이터가 없으면 console.log를 출력한다.
+  it("user 테이블에 데이터가 없으면 console.log를 출력한다.", async () => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
+
+    (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
+      data: {},
+      error: null,
+    });
+    (supabase.auth.getUser as jest.Mock).mockResolvedValue({
+      data: { user: { ...userData } },
+      error: null,
+    });
+    (supabase.from as jest.Mock).mockReturnValue({
+      select: () => ({
+        eq: () =>
+          Promise.resolve({ data: null, error: { message: "쿼리 실패" } }),
+      }),
+    });
+
+    const utils = renderLogin();
+    await inputAndSubmit(utils);
+
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith(
+        "user 테이블 조회 실패",
+        "쿼리 실패"
+      );
+    });
+  });
+
+  // user insert 실패 시 console.log를 출력한다.
+  it("user insert 실패 시 console.log를 출력한다.", async () => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
+
+    (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
+      data: {},
+      error: null,
+    });
+    (supabase.auth.getUser as jest.Mock).mockResolvedValue({
+      data: { user: { ...userData } },
+      error: null,
+    });
+    (supabase.from as jest.Mock).mockReturnValue({
+      select: () => ({
+        eq: () => Promise.resolve({ data: [], error: null }),
+      }),
+      insert: () => Promise.resolve({ error: { message: "insert 실패" } }),
+    });
+
+    const utils = renderLogin();
+    await inputAndSubmit(utils);
+
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith(
+        "user 테이블 insert 실패",
+        "insert 실패"
+      );
+    });
+  });
+
+  // 회원가입 버튼 클릭 시 회원가입 페이지로 이동한다.
+  it("회원가입 버튼 클릭 시 회원가입 페이지로 이동한다.", async () => {
+    const { getByText } = renderLogin();
+    await act(async () => {
+      fireEvent.press(getByText("회원가입"));
+    });
+    expect(mockPush).toHaveBeenCalledWith("/signup");
+  });
+
+  // user 테이블에 유저가 이미 존재하면 insert하지 않고 console.log를 출력한다.
+  it("user 테이블에 유저가 이미 존재하면 insert하지 않고 console.log를 출력한다.", async () => {
+    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const mockInsert = jest.fn();
+
+    (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
+      data: {},
+      error: null,
+    });
+    (supabase.auth.getUser as jest.Mock).mockResolvedValue({
+      data: { user: { ...userData } },
+      error: null,
+    });
+    (supabase.from as jest.Mock).mockReturnValue({
+      select: () => ({
+        eq: () =>
+          Promise.resolve({ data: [{ user_id: userData.id }], error: null }),
+      }),
+      insert: mockInsert,
+    });
+
+    const utils = renderLogin();
+    await inputAndSubmit(utils);
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "이미 user 테이블에 유저 정보가 있음"
+      );
+      expect(mockInsert).not.toHaveBeenCalled();
+    });
+
+    consoleSpy.mockRestore();
   });
 });

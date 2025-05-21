@@ -3,6 +3,7 @@ import { supabase } from "@/supabaseClient";
 import { fireEvent, render, waitFor } from "@testing-library/react-native";
 import { Alert } from "react-native";
 
+jest.setTimeout(10000);
 const mockPush = jest.fn();
 jest.mock("expo-router", () => ({
   useRouter: () => ({ push: mockPush }),

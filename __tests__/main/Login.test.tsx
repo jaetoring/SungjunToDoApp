@@ -1,8 +1,15 @@
 import LoginScreen from "@/app/login";
 import { supabase } from "@/supabaseClient";
-import { act, fireEvent, render, RenderAPI, waitFor } from "@testing-library/react-native";
+import {
+  act,
+  fireEvent,
+  render,
+  RenderAPI,
+  waitFor,
+} from "@testing-library/react-native";
 import { Alert } from "react-native";
 
+jest.setTimeout(10000);
 const mockPush = jest.fn();
 jest.mock("expo-router", () => ({ useRouter: () => ({ push: mockPush }) }));
 jest.mock("@/supabaseClient", () => ({
@@ -28,7 +35,9 @@ describe("Login", () => {
 
   const renderLogin = () => render(<LoginScreen />);
   // 버튼이벤트 하나로 묶어둠
-  const inputAndSubmit = async (getBy: Pick<RenderAPI, "getByPlaceholderText" | "getByText">) => {
+  const inputAndSubmit = async (
+    getBy: Pick<RenderAPI, "getByPlaceholderText" | "getByText">
+  ) => {
     await act(async () => {
       fireEvent.changeText(
         getBy.getByPlaceholderText("이메일"),

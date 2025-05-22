@@ -2,7 +2,21 @@ import StateEditIcon from "@/assets/images/common/stateEdit.png";
 import { Image, Text, View } from "react-native";
 import BoxBg from "../common/BoxBg";
 
+interface myPageProfileProps {
+  profile_img: string;
+  name: string;
+  level: number;
+  state_msg: string;
+}
+
 const StateMsgBox = () => {
+  const myPageProfileData: myPageProfileProps = {
+    profile_img: "",
+    name: "",
+    level: 1,
+    state_msg: "",
+  };
+
   return (
     <>
       <BoxBg>

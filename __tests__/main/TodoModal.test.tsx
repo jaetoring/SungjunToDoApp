@@ -140,6 +140,40 @@ describe("TodoModal", () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 
+  // 등록 버튼 이벤트
+  it("등록 버튼 클릭 시 handleAdd가 호출된다.", () => {
+    (useTodoStore as unknown as jest.Mock).mockReturnValue({
+      todo: mockTodo,
+      mode: "create",
+      setMode: jest.fn(),
+    });
+
+    const { getByText } = render(
+      <TodoModal visible={true} onClose={jest.fn()} />
+    );
+
+    const addButton = getByText("등록");
+    fireEvent.press(addButton);
+    expect(console.log).toHaveBeenCalledWith("새로운 Todo 추가");
+  });
+
+  // 완료 버튼 이벤트
+  it("완료 버튼 클릭 시 handleComplete가 호출된다.", () => {
+    (useTodoStore as unknown as jest.Mock).mockReturnValue({
+      todo: mockTodo,
+      mode: "isDone",
+      setMode: jest.fn(),
+    });
+
+    const { getByText } = render(
+      <TodoModal visible={true} onClose={jest.fn()} />
+    );
+
+    const deleteButton = getByText("완료");
+    fireEvent.press(deleteButton);
+    expect(console.log).toHaveBeenCalledWith("해당 Todo 완료");
+  });
+
   afterEach(() => {
     jest.restoreAllMocks();
   });

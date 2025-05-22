@@ -1,71 +1,116 @@
-import { useAuth } from "@/hooks/useAuth";
-import * as Google from "expo-auth-session/providers/google";
-import { useFonts } from "expo-font";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useEffect } from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 
-import bangersFont from "../assets/fonts/Bangers-Regular.ttf";
-import googleIcon from "../assets/images/googleIcon.png";
-import throwDiceImg from "../assets/images/throwDice.png";
+import FormInput from "@/components/common/FormInput";
+import LayoutBg from "@/components/common/LayoutBg";
+import TitleLogo from "@/components/common/TitleLogo";
+import { supabase } from "@/supabaseClient";
 
 export default function LoginScreen() {
-  const { login } = useAuth();
   const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [fontsLoaded] = useFonts({
-    Bangers: bangersFont,
-  });
+  const handleLogin = async () => {
+    console.log("로그인 시도:", email, password);
 
-  const [, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-    webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-  });
+    const { data: loginData, error: loginError } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-  useEffect(() => {
-    console.log("Google Login Response:", response);
-
-    if (!fontsLoaded) return;
-    if (response?.type === "success") {
-      login();
-      router.replace("/");
+    if (loginError) {
+      Alert.alert("로그인 실패", "아이디와 비밀번호를 확인해주세요.");
+      return;
     }
-  }, [response]);
 
-  if (!fontsLoaded) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-white">Loading Fonts..</Text>
-      </View>
-    );
-  }
+    console.log("로그인 성공", loginData);
+
+    const { data: sessionData, error: getUserError } =
+      await supabase.auth.getUser();
+
+    if (getUserError || !sessionData?.user) {
+      console.error("유저 정보 조회 실패", getUserError?.message);
+      return;
+    }
+
+    const user = sessionData.user;
+
+    // user 테이블에 이미 존재하는지 확인
+    const { data: existingUsers, error: selectError } = await supabase
+      .from("user")
+      .select("user_id")
+      .eq("user_id", user.id);
+
+    if (selectError) {
+      console.error("user 테이블 조회 실패", selectError.message);
+      return;
+    }
+
+    if (existingUsers.length === 0) {
+      const { error: insertError } = await supabase.from("user").insert({
+        user_id: user.id,
+        email: user.email,
+        created_at: user.created_at,
+        updated_at: user.created_at,
+      });
+
+      if (insertError) {
+        console.error("user 테이블 insert 실패", insertError.message);
+      } else {
+        console.log("user 테이블에 유저 정보 저장 완료");
+      }
+    } else {
+      console.log("이미 user 테이블에 유저 정보가 있음");
+    }
+
+    router.push("/(tabs)");
+  };
+
+  const handleMoveSingup = () => {
+    router.push("/signup");
+    console.log("회원가입 페이지로 이동");
+  };
 
   return (
-    <LinearGradient
-      colors={["#4F46E5", "#9333EA", "#EC4899"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      className="flex-1 items-center justify-center px-6"
-    >
-      <Text className="w-full text-center font-bangers text-6xl text-white mb-6 tracking-wide">
-        Yacht Dice
-      </Text>
-      <Image className="w-52 h-52 mb-10 opacity-90" source={throwDiceImg} />
-      <TouchableOpacity
-        className="bg-white px-8 py-4 rounded-full flex-row items-center shadow-lg shadow-gray-800/50"
-        activeOpacity={0.85}
-        onPress={() => promptAsync()}
-      >
-        <Image source={googleIcon} className="w-7 h-7 mr-4" />
-        <Text className="text-xl font-bold text-gray-800">
-          Sign in with Google
-        </Text>
-      </TouchableOpacity>
+    <LayoutBg>
+      <TitleLogo />
+      <View className="w-full px-20">
+        {/* 이메일 */}
+        <FormInput
+          value={email}
+          onChangeText={setEmail}
+          placeholder="이메일"
+          keyboardType="email-address"
+        />
 
-      <View className="absolute bottom-8">
-        <Text className="text-white text-sm opacity-70">© 2025 Yacht Dice</Text>
+        {/* 비밀번호 */}
+        <FormInput
+          value={password}
+          onChangeText={setPassword}
+          placeholder="비밀번호"
+          secureTextEntry
+        />
+
+        <TouchableOpacity
+          onPress={handleLogin}
+          className="w-full bg-pink-400 rounded-xl py-4 mb-4"
+        >
+          <Text className="text-white text-center font-semibold">로그인</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => handleMoveSingup()}>
+          <Text className="text-gray-600">
+            계정이 없으신가요?{" "}
+            <Text className="text-pink-500 font-bold">회원가입</Text>
+          </Text>
+        </TouchableOpacity>
       </View>
-    </LinearGradient>
+      <View className="absolute bottom-6">
+        <Text className="text-xs text-gray-400">MoonMiSae</Text>
+      </View>
+    </LayoutBg>
   );
 }

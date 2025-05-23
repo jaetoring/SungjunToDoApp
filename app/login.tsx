@@ -74,7 +74,7 @@ export default function LoginScreen() {
         if (hasError) {
           console.error("테이블 insert error", {
             user: userRes.error,
-            user_info: userInfoRes,
+            user_info: userInfoRes.error,
           });
 
           await supabase.from("user").delete().eq("user_id", user.id);

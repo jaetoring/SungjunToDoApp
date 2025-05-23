@@ -154,22 +154,34 @@ describe("Login", () => {
   });
 
   // user insert 실패 시 console.log를 출력한다.
-  it("user insert 실패 시 console.log를 출력한다.", async () => {
+  it("user insert 실패 시 console.error를 출력한다.", async () => {
     jest.spyOn(console, "error").mockImplementation(() => {});
+
+    const mockEq = jest.fn().mockResolvedValue({ error: null });
+    const mockDelete = jest.fn(() => ({ eq: mockEq }));
+    const mockInsert = jest
+      .fn()
+      .mockResolvedValueOnce({ error: { message: "insert 실패" } })
+      .mockResolvedValueOnce({ error: null });
 
     (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
       data: {},
       error: null,
     });
+
     (supabase.auth.getUser as jest.Mock).mockResolvedValue({
-      data: { user: { ...userData } },
+      data: { user: { ...userData, created_at: new Date().toISOString() } },
       error: null,
     });
-    (supabase.from as jest.Mock).mockReturnValue({
-      select: () => ({
-        eq: () => Promise.resolve({ data: [], error: null }),
-      }),
-      insert: () => Promise.resolve({ error: { message: "insert 실패" } }),
+
+    (supabase.from as jest.Mock).mockImplementation(() => {
+      return {
+        select: () => ({
+          eq: () => Promise.resolve({ data: [], error: null }),
+        }),
+        insert: mockInsert,
+        delete: mockDelete,
+      };
     });
 
     const utils = renderLogin();
@@ -177,8 +189,11 @@ describe("Login", () => {
 
     await waitFor(() => {
       expect(console.error).toHaveBeenCalledWith(
-        "user 테이블 insert 실패",
-        "insert 실패"
+        "테이블 insert error",
+        expect.objectContaining({
+          user: expect.objectContaining({ message: "insert 실패" }),
+          user_info: null,
+        })
       );
     });
   });
@@ -224,5 +239,101 @@ describe("Login", () => {
     });
 
     consoleSpy.mockRestore();
+  });
+
+  // DB 삽입 중 하나가 실패할 시 alert
+  it("user_info insert 실패 시 user/user_info 삭제 후 alert을 띄운다", async () => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    const alertSpy = jest.spyOn(Alert, "alert");
+
+    const mockInsert = jest
+      .fn()
+      .mockResolvedValueOnce({ error: null })
+      .mockResolvedValueOnce({ error: { message: "user_info insert 실패" } });
+
+    const mockEq = jest.fn().mockResolvedValue({ error: null });
+    const mockDelete = jest.fn(() => ({ eq: mockEq }));
+
+    (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
+      data: {},
+      error: null,
+    });
+    (supabase.auth.getUser as jest.Mock).mockResolvedValue({
+      data: { user: { ...userData, created_at: new Date().toISOString() } },
+      error: null,
+    });
+
+    (supabase.from as jest.Mock).mockImplementation(() => {
+      return {
+        select: () => ({
+          eq: () => Promise.resolve({ data: [], error: null }),
+        }),
+        insert: mockInsert,
+        delete: mockDelete,
+      };
+    });
+
+    const utils = renderLogin();
+    await inputAndSubmit(utils);
+
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalled();
+      expect(mockDelete).toHaveBeenCalledTimes(2);
+      expect(mockEq).toHaveBeenCalledTimes(2);
+      expect(alertSpy).toHaveBeenCalledWith(
+        "데이터 저장 실패",
+        "다시 시도해주세요."
+      );
+    });
+
+    alertSpy.mockRestore();
+  });
+
+  // promise.all 실패 시 예외처리
+  it("Promise.all 예외 시 Alert를 띄운다", async () => {
+    const alertSpy = jest.spyOn(Alert, "alert");
+    jest.spyOn(console, "error").mockImplementation(() => {});
+
+    const throwingInsert = jest.fn().mockRejectedValue(new Error("DB 터짐"));
+
+    const mockEq = jest.fn().mockResolvedValue({ error: null });
+    const mockDelete = jest.fn(() => ({ eq: mockEq }));
+
+    (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
+      data: {},
+      error: null,
+    });
+
+    (supabase.auth.getUser as jest.Mock).mockResolvedValue({
+      data: { user: { ...userData, created_at: new Date().toISOString() } },
+      error: null,
+    });
+
+    (supabase.from as jest.Mock).mockImplementation(() => {
+      return {
+        select: () => ({
+          eq: () => Promise.resolve({ data: [], error: null }),
+        }),
+        insert: throwingInsert,
+        delete: mockDelete,
+      };
+    });
+
+    const utils = renderLogin();
+    await inputAndSubmit(utils);
+
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith(
+        "Promise.all 예외",
+        expect.any(Error)
+      );
+
+      expect(alertSpy).toHaveBeenCalledWith(
+        "회원 데이터 저장 중 오류 발생",
+        "다시 시도해주세요."
+      );
+    });
+
+    alertSpy.mockRestore();
   });
 });

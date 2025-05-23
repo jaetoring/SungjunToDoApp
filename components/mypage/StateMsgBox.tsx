@@ -68,7 +68,7 @@ const StateMsgBox = ({ state_msg, onUpdated }: StateMsgBoxProps) => {
             <Text className="text-xl font-bold mr-2">상태 메세지</Text>
             <Text className="text-xs text-gray-500">({newMsg.length} / 50)</Text>
           </View>
-          <TouchableOpacity onPress={handleEditing}>
+          <TouchableOpacity onPress={handleEditing} testID="edit-btn">
             <Image source={StateEditIcon} style={{ width: 20, height: 20 }} />
           </TouchableOpacity>
         </View>

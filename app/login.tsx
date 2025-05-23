@@ -58,10 +58,9 @@ export default function LoginScreen() {
         updated_at: createdAt,
       });
       const insertUserInfo = supabase.from("user_info").insert({
-        user_id: user.id,
         current_exp: 0,
-        level: 0,
-        state_msg: "",
+        level: 1,
+        state_msg: "상태 메세지를 입력해보세요!",
       });
 
       try {

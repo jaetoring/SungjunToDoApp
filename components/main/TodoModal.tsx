@@ -1,6 +1,6 @@
 import { useTodoStore } from "@/store/todoStore";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal, Text, TouchableWithoutFeedback, View } from "react-native";
 import ModalBtn from "../common/ModalBtn";
 import ModalDesc from "../common/ModalDesc";

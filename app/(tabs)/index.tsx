@@ -11,21 +11,19 @@ import { ScrollView, View } from "react-native";
 
 const HomeScreen = () => {
   return (
-    <>
-      <LayoutBg>
-        <ScrollView className="flex-1 w-full">
-          <Header />
-          <View className="h-full w-full flex px-6">
-            {/* 프로필 박스 */}
-            <ProfileBox profileData={mainProfileData} />
-            {/* 경험치 박스 */}
-            <ExpBox expData={DummyExpData} />
-            {/* 투두리스트 박스 */}
-            <TodoListBox todoData={TodoListData} />
-          </View>
-        </ScrollView>
-      </LayoutBg>
-    </>
+    <LayoutBg>
+      <ScrollView className="flex-1 w-full">
+        <Header />
+        <View className="h-full w-full flex px-6">
+          {/* 프로필 박스 */}
+          <ProfileBox profileData={mainProfileData} />
+          {/* 경험치 박스 */}
+          <ExpBox expData={DummyExpData} />
+          {/* 투두리스트 박스 */}
+          <TodoListBox todoData={TodoListData} />
+        </View>
+      </ScrollView>
+    </LayoutBg>
   );
 };
 export default HomeScreen;

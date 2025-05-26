@@ -1,12 +1,15 @@
-import { ProfileType } from "@/types/profileType";
-import { Image, Text, View } from "react-native";
+import DefaultProfileImg from "@/assets/images/common/defaultProfile.png";
+import { getMedalByLevel } from "@/utils/findMedal";
+import { Image, ImageSourcePropType, Text, View } from "react-native";
 import BoxBg from "../common/BoxBg";
 
 interface ProfileBoxProps {
-  profileData: ProfileType;
+  name: string | null;
+  level: number | null;
+  profile_img?: ImageSourcePropType;
 }
 
-const ProfileBox = ({ profileData }: ProfileBoxProps) => {
+const ProfileBox = ({ name, level, profile_img }: ProfileBoxProps) => {
   const getFormattedDate = () => {
     const today = new Date();
     const options: Intl.DateTimeFormatOptions = {
@@ -30,19 +33,19 @@ const ProfileBox = ({ profileData }: ProfileBoxProps) => {
           </Text>
           <View className="flex-row items-center mt-2">
             <Image
-              source={profileData.medalImage}
+              source={getMedalByLevel(level)}
               style={{ width: 30, height: 30, marginRight: 10 }}
               testID="medal-image"
             />
             <Text className="text-2xl text-gray-500 font-medium">
-              LV.{profileData.level} {profileData.name}
+              LV.{level} {name}
             </Text>
           </View>
         </View>
 
         {/* 프로필 아이콘 */}
         <Image
-          source={profileData.profileImage}
+          source={profile_img ?? DefaultProfileImg}
           style={{ width: 70, height: 70, borderRadius: 40 }}
           testID="profile-image"
         />

@@ -54,7 +54,7 @@ const MypageScreen = () => {
               : DefaultProfileImg
           }
           name={userData?.user?.name ?? "OOO"}
-          level={userData?.userInfo?.level ?? 9999}
+          level={userData?.userInfo?.level ?? 999}
         />
         <StateMsgBox
           state_msg={

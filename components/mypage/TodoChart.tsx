@@ -52,8 +52,6 @@ const TodoChart = ({ todoList }: TodoChartProps) => {
 
   const chartData = weeklyData.map((y, i) => ({ x: i, y }));
 
-  const dayLabels = ["월", "화", "수", "목", "금", "토", "일"];
-
   return (
     <BoxBg>
       <View

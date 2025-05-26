@@ -3,7 +3,7 @@ import { Text, View } from "react-native";
 export default function TabTwoScreen() {
   return (
     <View>
-      <Text>123</Text>
+      <Text>setting page</Text>
     </View>
   );
 }

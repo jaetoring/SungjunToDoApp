@@ -1,3 +1,4 @@
+import LayoutBg from "@/components/common/LayoutBg";
 import Header from "@/components/layout/header";
 import ExpBox from "@/components/main/ExpBox";
 import ProfileBox from "@/components/main/ProfileBox";
@@ -10,7 +11,7 @@ import { ScrollView, View } from "react-native";
 
 const HomeScreen = () => {
   return (
-    <>
+    <LayoutBg>
       <ScrollView className="flex-1 w-full">
         <Header />
         <View className="h-full w-full flex px-6">
@@ -22,7 +23,7 @@ const HomeScreen = () => {
           <TodoListBox todoData={TodoListData} />
         </View>
       </ScrollView>
-    </>
+    </LayoutBg>
   );
 };
 export default HomeScreen;

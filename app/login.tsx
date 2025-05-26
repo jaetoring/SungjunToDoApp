@@ -50,17 +50,45 @@ export default function LoginScreen() {
     }
 
     if (existingUsers.length === 0) {
-      const { error: insertError } = await supabase.from("user").insert({
+      const createdAt = user.created_at;
+      const insertUser = supabase.from("user").insert({
         user_id: user.id,
         email: user.email,
-        created_at: user.created_at,
-        updated_at: user.created_at,
+        created_at: createdAt,
+        updated_at: createdAt,
+      });
+      const insertUserInfo = supabase.from("user_info").insert({
+        current_exp: 0,
+        level: 1,
+        state_msg: "상태 메세지를 입력해보세요!",
       });
 
-      if (insertError) {
-        console.error("user 테이블 insert 실패", insertError.message);
-      } else {
-        console.log("user 테이블에 유저 정보 저장 완료");
+      try {
+        const [userRes, userInfoRes] = await Promise.all([
+          insertUser,
+          insertUserInfo,
+        ]);
+
+        const hasError = userRes.error || userInfoRes.error;
+
+        if (hasError) {
+          console.error("테이블 insert error", {
+            user: userRes.error,
+            user_info: userInfoRes.error,
+          });
+
+          await supabase.from("user").delete().eq("user_id", user.id);
+          await supabase.from("user_info").delete().eq("user_id", user.id);
+
+          Alert.alert("데이터 저장 실패", "다시 시도해주세요.");
+          return;
+        }
+
+        console.log("user / user_info insert 성공");
+      } catch (err) {
+        console.error("Promise.all 예외", err);
+        Alert.alert("회원 데이터 저장 중 오류 발생", "다시 시도해주세요.");
+        return;
       }
     } else {
       console.log("이미 user 테이블에 유저 정보가 있음");

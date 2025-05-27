@@ -122,4 +122,29 @@ describe("StateMsgBox", () => {
     const { getByText } = render(<StateMsgBox state_msg="" />);
     expect(getByText("데이터 안들어옴")).toBeTruthy();
   });
+
+  // 업데이트 성공 시 정상적으로 동작
+  it("업데이트 성공 시 onUpdated 콜백 없이도 정상 동작한다", async () => {
+    const mockSelect = jest
+      .fn()
+      .mockResolvedValue({ data: [{ state_msg: "ok" }], error: null });
+    const mockEq = jest.fn(() => ({ select: mockSelect }));
+    const mockUpdate = jest.fn(() => ({ eq: mockEq }));
+    const mockFromReturn = { update: mockUpdate } as unknown as ReturnType<
+      typeof supabase.from
+    >;
+    jest.spyOn(supabase, "from").mockReturnValue(mockFromReturn);
+
+    const { getByTestId, getByDisplayValue } = render(
+      <StateMsgBox state_msg="initial" />
+    );
+
+    fireEvent.press(getByTestId("edit-btn"));
+    const input = getByDisplayValue("initial");
+    fireEvent.changeText(input, "ok");
+    fireEvent(input, "blur");
+
+    await new Promise((r) => setTimeout(r, 400));
+    expect(supabase.from).toHaveBeenCalledWith("user_info");
+  });
 });

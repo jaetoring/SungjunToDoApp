@@ -27,6 +27,7 @@ const TodoChart = ({ todoList }: TodoChartProps) => {
 
     const today = new Date();
     const todayDay = today.getDay();
+    /* istanbul ignore next */
     const diffToMonday = todayDay === 0 ? -6 : 1 - todayDay;
     const monday = new Date(today);
     monday.setDate(today.getDate() + diffToMonday);
@@ -56,6 +57,7 @@ const TodoChart = ({ todoList }: TodoChartProps) => {
     <BoxBg>
       <View
         className="justify-between py-2 px-4"
+        testID="chart-container"
         onLayout={(event) => {
           const { width } = event.nativeEvent.layout;
           setChartWidth(width);

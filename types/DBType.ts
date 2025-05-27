@@ -19,7 +19,7 @@ export interface TodoTableType {
   todo_id: number;
   title: string;
   description: string;
-  created_at: Date;
+  created_at: Date | null;
   is_done: boolean;
 }
 

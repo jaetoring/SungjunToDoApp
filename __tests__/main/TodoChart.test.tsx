@@ -5,10 +5,7 @@ import { TodoTableType } from "@/types/DBType";
 import { fireEvent, render } from "@testing-library/react-native";
 import React from "react";
 
-interface ChartPoint {
-  x: number;
-  y: number;
-}
+type ChartPoint = { x: number; y: number };
 
 const RealDate = Date;
 let todoData: TodoTableType[];

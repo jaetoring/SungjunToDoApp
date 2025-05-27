@@ -1,26 +1,32 @@
 import React from "react";
 
-type Props = Record<string, unknown>;
+type ChartPoint = { x: number; y: number };
 
-export const VictoryChart = (props: Props): React.ReactElement =>
+export const VictoryLine = (props: {
+  data: ChartPoint[];
+  testID?: string;
+}): React.ReactElement =>
+  React.createElement("mock-victory-line", {
+    testID: props.testID ?? "victory-line",
+    ...props,
+  });
+
+export const VictoryScatter = (props: {
+  labels: (args: { datum: { y: number } }) => string;
+  testID?: string;
+}): React.ReactElement =>
+  React.createElement("mock-victory-scatter", {
+    testID: props.testID ?? "victory-scatter",
+    ...props,
+  });
+
+export const VictoryChart = (props: {}): React.ReactElement =>
   React.createElement("mock-victory-chart", props);
 
-export const VictoryLine = (props: Props): React.ReactElement =>
-  React.createElement(
-    "mock-victory-line",
-    Object.assign({ testID: "victory-line" }, props)
-  );
-
-export const VictoryAxis = (props: Props): React.ReactElement =>
+export const VictoryAxis = (props: {}): React.ReactElement =>
   React.createElement("mock-victory-axis", props);
 
-export const VictoryTooltip = (props: Props): React.ReactElement =>
+export const VictoryTooltip = (props: {}): React.ReactElement =>
   React.createElement("mock-victory-tooltip", props);
-
-export const VictoryScatter = (props: Props): React.ReactElement =>
-  React.createElement(
-    "mock-victory-scatter",
-    Object.assign({ testID: "victory-scatter" }, props)
-  );
 
 export const VictoryTheme = {};

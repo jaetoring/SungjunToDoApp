@@ -24,7 +24,7 @@ beforeAll(() => {
     }
     static parse = RealDate.parse;
     static UTC = RealDate.UTC;
-  } as any;
+  } as unknown as typeof Date;
 
   todoData = [
     // 완료 todo

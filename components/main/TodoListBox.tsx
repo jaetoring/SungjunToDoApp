@@ -1,13 +1,13 @@
 import TodoModal from "@/components/main/TodoModal";
 import { useTodoStore } from "@/store/todoStore";
-import { TodoList } from "@/types/todoList";
+import { TodoTableType } from "@/types/DBType";
 import React, { useState } from "react";
 import { Text, View } from "react-native";
 import BoxBg from "../common/BoxBg";
 import TodoAddBtn from "../common/TodoAddBtn";
 import TodoBox from "./TodoBox";
 interface TodoListBoxProps {
-  todoData: TodoList[];
+  todoData: TodoTableType[] | null;
 }
 
 const TodoListBox = ({ todoData }: TodoListBoxProps) => {
@@ -15,7 +15,7 @@ const TodoListBox = ({ todoData }: TodoListBoxProps) => {
   const setTodo = useTodoStore((state) => state.setTodo);
   const setMode = useTodoStore((state) => state.setMode);
 
-  const handleTodoModal = (todo: TodoList) => {
+  const handleTodoModal = (todo: TodoTableType) => {
     setModalOn(true);
     setTodo(todo);
     setMode("read");
@@ -39,9 +39,9 @@ const TodoListBox = ({ todoData }: TodoListBoxProps) => {
         <View className="w-full flex-col px-5 pt-4">
           <Text className="text-3xl font-bold mb-4">TodoList</Text>
           <View className="w-full">
-            {todoData.map((todo) => (
+            {todoData?.map((todo) => (
               <TodoBox
-                key={todo.id}
+                key={todo.todo_id}
                 todoData={todo}
                 onPress={() => handleTodoModal(todo)}
               />

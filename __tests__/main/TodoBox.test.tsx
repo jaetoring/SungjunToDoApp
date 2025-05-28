@@ -2,23 +2,26 @@ import { fireEvent, render } from "@testing-library/react-native";
 import React from "react";
 
 import TodoBox from "@/components/main/TodoBox";
+import { TodoTableType } from "@/types/DBType";
 import { jest } from "@jest/globals";
 
 jest.mock("react-native/Libraries/Image/Image", () => "Image");
 
 describe("TodoBox", () => {
-  const todoData = [
+  const todoData: TodoTableType[] = [
     {
-      id: 1,
+      todo_id: 1,
       title: "미완료된 todo",
       description: "todo를 해야 해",
-      isDone: false,
+      is_done: false,
+      created_at: new Date(),
     },
     {
-      id: 2,
+      todo_id: 2,
       title: "완료된 todo",
       description: "todo를 완료했어",
-      isDone: true,
+      is_done: true,
+      created_at: new Date(),
     },
   ];
 

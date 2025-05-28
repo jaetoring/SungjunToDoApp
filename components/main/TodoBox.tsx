@@ -1,6 +1,6 @@
 import TodoModal from "@/components/main/TodoModal";
 import { useTodoStore } from "@/store/todoStore";
-import { TodoList } from "@/types/todoList";
+import { TodoTableType } from "@/types/DBType";
 import { LinearGradient } from "expo-linear-gradient";
 import { useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
@@ -8,7 +8,7 @@ import CompleteStamp from "../../assets/images/common/completeStamp.png";
 import Stamp from "../../assets/images/common/stamp.png";
 
 interface TodoBoxProps {
-  todoData: TodoList;
+  todoData: TodoTableType;
   onPress?: () => void;
 }
 
@@ -28,12 +28,13 @@ const TodoBox = ({ todoData, onPress }: TodoBoxProps) => {
   return (
     <>
       <TouchableOpacity
-        key={todoData.id}
+        key={todoData.todo_id}
         onPress={onPress}
         style={{
           marginBottom: 10,
           backgroundColor: "rgba(0, 0, 0, 0.1)",
           zIndex: 3,
+          borderRadius: 10,
         }}
       >
         <LinearGradient
@@ -53,7 +54,7 @@ const TodoBox = ({ todoData, onPress }: TodoBoxProps) => {
             <Text className="text-[18px] mb-5 font-bold">{todoData.title}</Text>
             <Text className="text-[16px]">+5 XP</Text>
           </View>
-          {todoData.isDone ? (
+          {todoData.is_done ? (
             <Image
               source={CompleteStamp}
               style={{
@@ -78,7 +79,7 @@ const TodoBox = ({ todoData, onPress }: TodoBoxProps) => {
           )}
         </LinearGradient>
 
-        {todoData.isDone && (
+        {todoData.is_done && (
           <View
             className="absolute top-0 left-0 right-0 bottom-0 bg-black opacity-50 rounded-[10px]"
             style={{ zIndex: 1 }}

@@ -1,20 +1,21 @@
-import { ExpType } from "@/types/expType";
 import { Text, View } from "react-native";
 import BoxBg from "../common/BoxBg";
 import OneExp from "./OneExp";
 
 interface ExpTypeProps {
-  expData: ExpType;
+  currentExp: number;
+  level: number;
 }
 
-const ExpBox = ({ expData }: ExpTypeProps) => {
+const ExpBox = ({ currentExp, level }: ExpTypeProps) => {
+  const maxExp = 100;
   // 레벨업 시 경험치 분배
-  const levelUpCount = Math.floor(expData.currentExp / expData.maxExp);
-  const newLevel = expData.level + levelUpCount;
-  const newRemainExp = expData.currentExp % expData.maxExp;
+  const levelUpCount = Math.floor(currentExp / maxExp);
+  const newLevel = level + levelUpCount;
+  const newRemainExp = currentExp % maxExp;
 
   // 경험치 나누기
-  const oneBlockExp = expData.maxExp / 10;
+  const oneBlockExp = maxExp / 10;
   const fullBlocks = Math.floor(newRemainExp / oneBlockExp);
   const remainExp = newRemainExp % oneBlockExp;
   const remainFillExp = remainExp / oneBlockExp;
@@ -33,7 +34,7 @@ const ExpBox = ({ expData }: ExpTypeProps) => {
             LV.{newLevel}
           </Text>
           <Text className="text-xl font-light">
-            ({newRemainExp} / {expData.maxExp}XP)
+            ({newRemainExp} / {maxExp}XP)
           </Text>
         </View>
         <View className="w-full flex-row flex-wrap" testID="exp-bar">

@@ -2,23 +2,26 @@ import { fireEvent, render } from "@testing-library/react-native";
 import React from "react";
 
 import TodoListBox from "@/components/main/TodoListBox";
+import { TodoTableType } from "@/types/DBType";
 import { jest } from "@jest/globals";
 
 jest.mock("react-native/Libraries/Image/Image", () => "Image");
 
 describe("TodoListBox", () => {
-  const todoListData = [
+  const todoListData: TodoTableType[] = [
     {
-      id: 1,
+      todo_id: 1,
       title: "test1",
       description: "test1 설명",
-      isDone: false,
+      is_done: false,
+      created_at: new Date(),
     },
     {
-      id: 2,
+      todo_id: 2,
       title: "test2",
       description: "test2 설명",
-      isDone: true,
+      is_done: true,
+      created_at: new Date(),
     },
   ];
 

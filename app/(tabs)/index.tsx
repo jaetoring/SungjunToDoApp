@@ -29,11 +29,19 @@ const HomeScreen = () => {
 
   const fetchData = useCallback(async () => {
     const userId = await getUserId();
+    if (!userId) return;
+
+    const today = new Date().toISOString().slice(0, 10);
+
     const [{ data: user }, { data: userInfo }, { data: todo }] =
       await Promise.all([
         supabase.from("user").select("*").eq("user_id", userId).single(),
         supabase.from("user_info").select("*").eq("user_id", userId).single(),
-        supabase.from("todo").select("*").eq("user_id", userId),
+        supabase
+          .from("todo")
+          .select("*")
+          .eq("user_id", userId)
+          .eq("created_at", today),
       ]);
 
     setUserData({ user, userInfo, todo });
@@ -61,7 +69,10 @@ const HomeScreen = () => {
               level={userData?.userInfo?.level ?? 999}
             />
             {/* 투두리스트 박스 */}
-            <TodoListBox todoData={userData?.todo ?? null} />
+            <TodoListBox
+              todoData={userData?.todo ?? null}
+              reloadData={fetchData}
+            />
           </View>
         </ScrollView>
       </LayoutBg>

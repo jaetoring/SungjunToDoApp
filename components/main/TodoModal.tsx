@@ -1,7 +1,14 @@
 import { useTodoStore } from "@/store/todoStore";
+import { supabase } from "@/supabaseClient";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { Modal, Text, TouchableWithoutFeedback, View } from "react-native";
+import {
+  Alert,
+  Modal,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import ModalBtn from "../common/ModalBtn";
 import ModalDesc from "../common/ModalDesc";
 import ModalTitle from "../common/ModalTitle";
@@ -9,12 +16,18 @@ import ModalTitle from "../common/ModalTitle";
 interface TodoModalProps {
   visible: boolean;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
-const TodoModal = ({ visible, onClose }: TodoModalProps) => {
+const TodoModal = ({ visible, onClose, onSuccess }: TodoModalProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const { todo, mode } = useTodoStore();
+
+  const getUserId = async () => {
+    const { data } = await supabase.auth.getUser();
+    return data.user?.id;
+  };
 
   useEffect(() => {
     if (todo) {
@@ -27,25 +40,68 @@ const TodoModal = ({ visible, onClose }: TodoModalProps) => {
   }, [todo, visible]);
 
   // todo 수정
-  const handleUpdate = () => {
-    console.log(
-      `이 후 해당 값으로 수정되야 해! title=${title} description=${description}`
-    );
+  const handleUpdate = async () => {
+    try {
+      const userId = await getUserId();
+      const { error } = await supabase
+        .from("todo")
+        .update({ title, description })
+        .eq("todo_id", todo?.todo_id);
+      if (error) throw error;
+      onSuccess();
+    } catch (err: any) {
+      console.error("수정 중 에러:", err);
+      Alert.alert("수정 실패", err.message);
+    }
   };
 
   // todo 삭제
-  const handleDelete = () => {
-    console.log("해당 todo.id에 맞게 삭제");
+  const handleDelete = async () => {
+    if (!todo) return;
+    try {
+      const { error } = await supabase
+        .from("todo")
+        .delete()
+        .eq("todo_id", todo.todo_id);
+
+      if (error) throw error;
+      onSuccess();
+    } catch (err: any) {
+      console.error("삭제 중 에러:", err);
+      Alert.alert("삭제 실패", err.message);
+    }
   };
 
   // todo 추가
-  const handleAdd = () => {
-    console.log("새로운 Todo 추가");
+  const handleAdd = async () => {
+    try {
+      const userId = await getUserId();
+      const { error } = await supabase
+        .from("todo")
+        .insert([{ title, description, user_id: userId }]);
+
+      if (error) throw error;
+      onSuccess();
+    } catch (err: any) {
+      console.error("추가 중 에러:", err);
+      Alert.alert("추가 실패", err.message);
+    }
   };
 
   // todo 완료
-  const handleComplete = () => {
-    console.log("해당 Todo 완료");
+  const handleComplete = async () => {
+    try {
+      const { error } = await supabase
+        .from("todo")
+        .update({ is_done: true })
+        .eq("todo_id", todo?.todo_id);
+
+      if (error) throw error;
+      onSuccess();
+    } catch (err: any) {
+      console.error("완료 중 에러:", err);
+      Alert.alert("완료 실패", err.message);
+    }
   };
 
   return (
@@ -88,7 +144,7 @@ const TodoModal = ({ visible, onClose }: TodoModalProps) => {
                     description={description}
                     onChange={setDescription}
                   />
-                  {mode === "read" && todo?.isDone === false && (
+                  {mode === "read" && todo?.is_done === false && (
                     <View className="flex-row justify-between">
                       <ModalBtn label="수정" onPress={handleUpdate} />
                       <ModalBtn label="삭제" onPress={handleDelete} />

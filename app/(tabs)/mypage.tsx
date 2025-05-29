@@ -13,7 +13,8 @@ import {
   UserTableType,
 } from "@/types/DBType";
 import { convertBadgeIcon } from "@/utils/badgeIconMap";
-import { useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { ScrollView, Text } from "react-native";
 
 interface UserData {
@@ -68,9 +69,11 @@ const MypageScreen = () => {
     setUserData({ user, userInfo, todo, userBadgeList });
   }, []);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [fetchData])
+  );
 
   return (
     <LayoutBg>

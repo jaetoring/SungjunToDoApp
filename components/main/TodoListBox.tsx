@@ -8,9 +8,10 @@ import TodoAddBtn from "../common/TodoAddBtn";
 import TodoBox from "./TodoBox";
 interface TodoListBoxProps {
   todoData: TodoTableType[] | null;
+  reloadData: () => void;
 }
 
-const TodoListBox = ({ todoData }: TodoListBoxProps) => {
+const TodoListBox = ({ todoData, reloadData }: TodoListBoxProps) => {
   const [modalOn, setModalOn] = useState(false);
   const setTodo = useTodoStore((state) => state.setTodo);
   const setMode = useTodoStore((state) => state.setMode);
@@ -44,6 +45,7 @@ const TodoListBox = ({ todoData }: TodoListBoxProps) => {
                 key={todo.todo_id}
                 todoData={todo}
                 onPress={() => handleTodoModal(todo)}
+                reloadData={reloadData}
               />
             ))}
           </View>
@@ -53,7 +55,14 @@ const TodoListBox = ({ todoData }: TodoListBoxProps) => {
           <TodoAddBtn onPress={() => hadleAddTodo()} />
         </View>
       </BoxBg>
-      <TodoModal visible={modalOn} onClose={closeModal} />
+      <TodoModal
+        visible={modalOn}
+        onClose={closeModal}
+        onSuccess={() => {
+          closeModal();
+          reloadData();
+        }}
+      />
     </>
   );
 };

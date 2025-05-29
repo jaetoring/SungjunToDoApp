@@ -31,7 +31,11 @@ export interface BadgeTableType {
 }
 
 export interface UserBadgeTableType {
-  user_id: number;
   badge_id: number;
+  obtained_at: Date;
+}
+
+export interface UserBadgeListType {
+  badge: BadgeTableType;
   obtained_at: Date;
 }

@@ -10,10 +10,7 @@ export default function IndexPage() {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setIsReady(true);
-    }, 2000);
-    return () => clearTimeout(timeout);
+    setIsReady(true);
   }, []);
 
   useEffect(() => {

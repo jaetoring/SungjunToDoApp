@@ -90,16 +90,65 @@ const TodoModal = ({ visible, onClose, onSuccess }: TodoModalProps) => {
 
   // todo 완료
   const handleComplete = async () => {
-    try {
-      const { error } = await supabase
-        .from("todo")
-        .update({ is_done: true })
-        .eq("todo_id", todo?.todo_id);
+    if (!todo) {
+      return Alert.alert("오류", "완료할 TODO 정보가 없습니다.");
+    }
 
-      if (error) throw error;
+    try {
+      const {
+        data: { user },
+        error: authErr,
+      } = await supabase.auth.getUser();
+      if (authErr || !user) throw authErr ?? new Error("로그인 필요");
+      const userId = user.id;
+
+      const { data: allDone, error: allDoneErr } = await supabase
+        .from("todo")
+        .select("todo_id, created_at")
+        .eq("user_id", userId)
+        .eq("is_done", true);
+      if (allDoneErr) throw allDoneErr;
+
+      const today = new Date().toISOString().slice(0, 10);
+      const doneToday = allDone.filter(
+        (t) => t.created_at?.slice(0, 10) === today
+      );
+      const doneCount = doneToday.length;
+
+      const { error: completeErr } = await supabase
+        .from("todo")
+        .update({
+          is_done: true,
+          created_at: new Date().toISOString(),
+        })
+        .eq("todo_id", todo.todo_id);
+      if (completeErr) throw completeErr;
+
+      if (doneCount < 4) {
+        const { data: ui, error: uiErr } = await supabase
+          .from("user_info")
+          .select("current_exp, level")
+          .eq("user_id", userId)
+          .single();
+        if (uiErr || !ui) throw uiErr ?? new Error("유저 정보 로드 실패");
+
+        let { current_exp, level } = ui;
+        current_exp += 5;
+        if (current_exp >= 100) {
+          level += 1;
+          current_exp -= 100;
+        }
+
+        const { error: expErr } = await supabase
+          .from("user_info")
+          .update({ current_exp, level })
+          .eq("user_id", userId);
+        if (expErr) throw expErr;
+      }
+
       onSuccess();
     } catch (err: any) {
-      console.error("완료 중 에러:", err);
+      console.error("완료 처리 중 에러:", err);
       Alert.alert("완료 실패", err.message);
     }
   };

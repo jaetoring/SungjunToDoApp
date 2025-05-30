@@ -41,7 +41,7 @@ const HomeScreen = () => {
           .from("todo")
           .select("*")
           .eq("user_id", userId)
-          .eq("created_at", today),
+          .filter("created_at::date", "eq", today),
       ]);
 
     setUserData({ user, userInfo, todo });

@@ -15,7 +15,7 @@ const Header = () => {
     setModalOn(false);
   };
   return (
-    <SafeAreaView edges={["top"]} className="justify-center relative">
+    <SafeAreaView edges={["top"]} className="justify-center relative w-full">
       <View className="items-center py-4">
         <Text
           className="text-4xl font-bold"
@@ -26,7 +26,7 @@ const Header = () => {
       </View>
 
       {/* 레벨 메달아이콘 */}
-      <TouchableOpacity onPress={openModal} className="absolute top-5 right-5">
+      <TouchableOpacity onPress={openModal} className="absolute top-11 right-5">
         <Image
           source={IconGuide}
           style={{ width: 30, height: 30 }}

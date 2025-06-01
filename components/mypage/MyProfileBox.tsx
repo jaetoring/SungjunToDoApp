@@ -15,7 +15,7 @@ const MyProfileBox = ({ profile_img, name, level }: MyProfileProps) => {
         <View className="mb-2">
           <Image
             source={profile_img}
-            style={{ width: 90, height: 90 }}
+            style={{ width: 90, height: 90, borderRadius: 50 }}
             testID="myprofile-image"
           />
         </View>

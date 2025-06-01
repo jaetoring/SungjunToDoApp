@@ -15,7 +15,7 @@ import {
 import { convertBadgeIcon } from "@/utils/badgeIconMap";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
-import { ScrollView, Text } from "react-native";
+import { ScrollView } from "react-native";
 
 interface UserData {
   user: UserTableType | null;
@@ -77,8 +77,8 @@ const MypageScreen = () => {
 
   return (
     <LayoutBg>
+      <Header />
       <ScrollView className="flex-1 w-full px-4">
-        <Header />
         <MyProfileBox
           profile_img={
             userData?.user?.profile_img
@@ -96,10 +96,6 @@ const MypageScreen = () => {
         />
         <TodoChart todoList={userData?.todo ?? null} />
         <BadgeBox badgeList={userData?.userBadgeList ?? []} />
-        {/* 데이터 테스트 */}
-        <Text selectable className="text-xs text-black">
-          {JSON.stringify(userData, null, 2)}
-        </Text>
       </ScrollView>
     </LayoutBg>
   );

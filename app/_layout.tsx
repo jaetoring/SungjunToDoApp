@@ -1,3 +1,4 @@
+import "react-native-url-polyfill/auto";
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {

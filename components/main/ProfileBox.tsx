@@ -1,4 +1,3 @@
-import DefaultProfileImg from "@/assets/images/common/defaultProfile.png";
 import { getMedalByLevel } from "@/utils/findMedal";
 import { Image, ImageSourcePropType, Text, View } from "react-native";
 import BoxBg from "../common/BoxBg";
@@ -45,8 +44,8 @@ const ProfileBox = ({ name, level, profile_img }: ProfileBoxProps) => {
 
         {/* 프로필 아이콘 */}
         <Image
-          source={profile_img ?? DefaultProfileImg}
-          style={{ width: 70, height: 70, borderRadius: 40 }}
+          source={profile_img}
+          style={{ width: 70, height: 70, borderRadius: 50 }}
           testID="profile-image"
         />
       </View>

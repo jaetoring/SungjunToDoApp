@@ -40,14 +40,22 @@ const TodoListBox = ({ todoData, reloadData }: TodoListBoxProps) => {
         <View className="w-full flex-col px-5 pt-4">
           <Text className="text-3xl font-bold mb-4">TodoList</Text>
           <View className="w-full">
-            {todoData?.map((todo) => (
-              <TodoBox
-                key={todo.todo_id}
-                todoData={todo}
-                onPress={() => handleTodoModal(todo)}
-                reloadData={reloadData}
-              />
-            ))}
+            {todoData && todoData.length > 0 ? (
+              todoData.map((todo) => (
+                <TodoBox
+                  key={todo.todo_id}
+                  todoData={todo}
+                  onPress={() => handleTodoModal(todo)}
+                  reloadData={reloadData}
+                />
+              ))
+            ) : (
+              <View className="border border-gray-400 border-dashed rounded-xl p-5 items-center justify-center mb-4">
+                <Text className="text-gray-500 text-xl">
+                  등록된 할 일이 없습니다
+                </Text>
+              </View>
+            )}
           </View>
         </View>
 

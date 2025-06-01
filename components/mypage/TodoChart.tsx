@@ -6,6 +6,7 @@ import { Dimensions, Text, View } from "react-native";
 import {
   VictoryAxis,
   VictoryChart,
+  VictoryContainer,
   VictoryLine,
   VictoryScatter,
   VictoryTheme,
@@ -73,6 +74,7 @@ const TodoChart = ({ todoList }: TodoChartProps) => {
           }}
         >
           <VictoryChart
+            containerComponent={<VictoryContainer />}
             width={chartWidth - 32}
             height={200}
             padding={{ top: 10, bottom: 30, left: 30, right: 10 }}
@@ -120,6 +122,7 @@ const TodoChart = ({ todoList }: TodoChartProps) => {
               labels={({ datum }) => `${datum.y}개 완료`}
               labelComponent={
                 <VictoryTooltip
+                  renderInPortal={false}
                   constrainToVisibleArea={true}
                   flyoutStyle={{
                     fill: "#fff",

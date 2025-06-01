@@ -54,14 +54,18 @@ const HomeScreen = () => {
   return (
     <>
       <LayoutBg>
+        <Header />
         <ScrollView className="flex-1 w-full">
-          <Header />
           <View className="h-full w-full flex px-6">
             {/* 프로필 박스 */}
             <ProfileBox
               name={userData?.user?.name ?? "OOO"}
               level={userData?.userInfo?.level ?? 999}
-              profile_img={userData?.user?.profile_img ?? DefaultProfileImg}
+              profile_img={
+                userData?.user?.profile_img
+                  ? { uri: userData.user.profile_img }
+                  : DefaultProfileImg
+              }
             />
             {/* 경험치 박스 */}
             <ExpBox

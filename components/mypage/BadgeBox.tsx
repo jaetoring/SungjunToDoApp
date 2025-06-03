@@ -1,4 +1,5 @@
-import { Image, ImageSourcePropType, Text, View } from "react-native";
+import { convertBadgeIcon } from "@/utils/badgeIconMap";
+import { Image, Text, View } from "react-native";
 import BoxBg from "../common/BoxBg";
 
 interface BadgeListProps {
@@ -6,7 +7,7 @@ interface BadgeListProps {
     name: string;
     badge_id: number;
     obtain_guide: string;
-    icon_url: ImageSourcePropType;
+    icon_url: string;
   };
   obtained_at: Date;
 }
@@ -27,7 +28,7 @@ const BadgeBox = ({ badgeList }: BadgeBoxProps) => {
               className="flex-col items-center mr-4"
             >
               <Image
-                source={item.badge.icon_url}
+                source={convertBadgeIcon(item.badge.icon_url)}
                 style={{ width: 60, height: 60 }}
               />
               <Text className="text-sm">{item.badge.name}</Text>

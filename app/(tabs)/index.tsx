@@ -1,26 +1,31 @@
 import DefaultProfileImg from "@/assets/images/common/defaultProfile.png";
 import LayoutBg from "@/components/common/LayoutBg";
 import Header from "@/components/layout/header";
+import BadgeModal from "@/components/main/BadgeModal";
 import ExpBox from "@/components/main/ExpBox";
 import ProfileBox from "@/components/main/ProfileBox";
 import TodoListBox from "@/components/main/TodoListBox";
 import { supabase } from "@/supabaseClient";
 import {
   TodoTableType,
+  UserBadgeTableType,
   UserInfoTableType,
   UserTableType,
 } from "@/types/DBType";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, View } from "react-native";
 
 interface UserData {
   user: UserTableType | null;
   userInfo: UserInfoTableType | null;
   todo: TodoTableType[] | null;
+  userBadge: UserBadgeTableType[] | null;
 }
 
 const HomeScreen = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
+  const prevBadgeList = useRef<UserBadgeTableType[] | null>(null);
+  const [newBadgeList, setNewBadgeList] = useState<UserBadgeTableType[]>([]);
 
   const getUserId = async () => {
     const { data } = await supabase.auth.getUser();
@@ -33,23 +38,51 @@ const HomeScreen = () => {
 
     const today = new Date().toISOString().slice(0, 10);
 
-    const [{ data: user }, { data: userInfo }, { data: todo }] =
-      await Promise.all([
-        supabase.from("user").select("*").eq("user_id", userId).single(),
-        supabase.from("user_info").select("*").eq("user_id", userId).single(),
-        supabase
-          .from("todo")
-          .select("*")
-          .eq("user_id", userId)
-          .filter("created_at::date", "eq", today),
-      ]);
+    const [
+      { data: user },
+      { data: userInfo },
+      { data: todo },
+      { data: userBadge },
+    ] = await Promise.all([
+      supabase.from("user").select("*").eq("user_id", userId).single(),
+      supabase.from("user_info").select("*").eq("user_id", userId).single(),
+      supabase
+        .from("todo")
+        .select("*")
+        .eq("user_id", userId)
+        .filter("created_at::date", "eq", today),
+      supabase.from("user_badge").select("*").eq("user_id", userId),
+    ]);
 
-    setUserData({ user, userInfo, todo });
+    // 뱃지 획득
+    const prevBadges = prevBadgeList.current;
+    const newBadges = userBadge ?? [];
+
+    if (prevBadges !== null) {
+      const prevIds = new Set(prevBadges.map((b) => b.badge_id));
+      const newObtainBadge = newBadges.filter((b) => !prevIds.has(b.badge_id));
+
+      if (newObtainBadge.length > 0) {
+        setNewBadgeList((prevQueue) => [...prevQueue, ...newObtainBadge]);
+      }
+    }
+
+    prevBadgeList.current = newBadges;
+    setUserData({ user, userInfo, todo, userBadge });
   }, []);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
+
+  const currentBadge = newBadgeList.length > 0 ? newBadgeList[0] : null;
+
+  const modalClose = () => {
+    setNewBadgeList((prevQueue) => {
+      const [, ...rest] = prevQueue;
+      return rest;
+    });
+  };
 
   return (
     <>
@@ -80,6 +113,11 @@ const HomeScreen = () => {
           </View>
         </ScrollView>
       </LayoutBg>
+      <BadgeModal
+        visible={currentBadge !== null}
+        badge={currentBadge}
+        onClose={modalClose}
+      />
     </>
   );
 };

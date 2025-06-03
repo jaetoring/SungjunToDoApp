@@ -12,7 +12,6 @@ import {
   UserInfoTableType,
   UserTableType,
 } from "@/types/DBType";
-import { convertBadgeIcon } from "@/utils/badgeIconMap";
 import { useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { ScrollView } from "react-native";
@@ -60,7 +59,7 @@ const MypageScreen = () => {
             badge_id: badgeObj.badge_id,
             name: badgeObj.name,
             obtain_guide: badgeObj.obtain_guide,
-            icon_url: convertBadgeIcon(badgeObj.icon_url)!,
+            icon_url: badgeObj.icon_url,
           },
           obtained_at: new Date(item.obtained_at),
         };

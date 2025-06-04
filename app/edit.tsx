@@ -84,55 +84,57 @@ const Edit = () => {
         return;
       }
       const userId = user.id;
-
       let imageUrl: string | null = null;
+
       if (image) {
-        const fileExt = image.split(".").pop()?.toLowerCase() || "jpg";
-
-        // mime 타입 지정
-        let mimeType: string;
-        if (fileExt === "png") {
-          mimeType = "image/png";
+        if (image.startsWith("http")) {
+          imageUrl = image;
         } else {
-          mimeType = "image/jpeg";
+          const response = await fetch(image);
+          const blob = await response.blob();
+          const mimeType = blob.type;
+          const fileExt = mimeType.split("/")[1];
+
+          const fileName = `profile-${userId}.${fileExt}`;
+          const filePath = `profile-images/${fileName}`;
+
+          const fileToUpload = {
+            uri: image,
+            name: fileName,
+            type: mimeType,
+          };
+
+          const { error: uploadError } = await supabase.storage
+            .from("avatars")
+            .upload(filePath, fileToUpload as any, {
+              cacheControl: "0",
+              upsert: true,
+              contentType: mimeType,
+            });
+
+          if (uploadError) {
+            console.error("이미지 업로드 실패:", uploadError);
+            Alert.alert("오류", "이미지 업로드에 실패했습니다.");
+            setLoading(false);
+            return;
+          }
+
+          const { data } = supabase.storage
+            .from("avatars")
+            .getPublicUrl(filePath);
+
+          if (!data || !data.publicUrl) {
+            Alert.alert("오류", "이미지 URL을 가져오지 못했습니다.");
+            setLoading(false);
+            return;
+          }
+
+          // 수정된 storage 이미지 불러오기
+          const pureUrl = data.publicUrl;
+          const cacheBustedUrl = `${pureUrl}?t=${Date.now()}`;
+          setImage(cacheBustedUrl);
+          imageUrl = pureUrl;
         }
-
-        const fileName = `profile-${userId}.${fileExt}`;
-        const filePath = `profile-images/${fileName}`;
-
-        // supabase 업로드 객체
-        const fileToUpload = {
-          uri: image,
-          name: fileName,
-          type: mimeType,
-        };
-
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("avatars")
-          .upload(filePath, fileToUpload as any, {
-            cacheControl: "3600",
-            upsert: true,
-            contentType: mimeType,
-          });
-
-        if (uploadError) {
-          console.error("이미지 업로드 실패:", uploadError);
-          Alert.alert("오류", "이미지 업로드에 실패했습니다.");
-          setLoading(false);
-          return;
-        }
-
-        // 업로드 된 이미지 url 가져오기
-        const { data } = supabase.storage
-          .from("avatars")
-          .getPublicUrl(filePath);
-
-        if (!data || !data.publicUrl) {
-          Alert.alert("오류", "이미지 URL을 가져오지 못했습니다.");
-          setLoading(false);
-          return;
-        }
-        imageUrl = data.publicUrl;
       }
 
       const updates: any = { name: nickname };

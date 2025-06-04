@@ -1,5 +1,3 @@
-// components/common/BadgeModal.tsx
-
 import { supabase } from "@/supabaseClient";
 import { BadgeTableType, UserBadgeTableType } from "@/types/DBType";
 import { convertBadgeIcon } from "@/utils/badgeIconMap";

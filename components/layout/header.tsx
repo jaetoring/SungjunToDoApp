@@ -1,4 +1,4 @@
-import IconGuide from "@/assets/images/common/iconGuide.png";
+import GuideIcon from "@/assets/images/common/iconGuide.png";
 import { useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,7 +28,7 @@ const Header = () => {
       {/* 레벨 메달아이콘 */}
       <TouchableOpacity onPress={openModal} className="absolute top-11 right-5">
         <Image
-          source={IconGuide}
+          source={GuideIcon}
           style={{ width: 30, height: 30 }}
           testID="icon-guide"
         ></Image>

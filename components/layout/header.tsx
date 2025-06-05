@@ -1,20 +1,21 @@
-import { useFonts } from "expo-font";
-import { Text, View } from "react-native";
+import IconGuide from "@/assets/images/common/iconGuide.png";
+import { useState } from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import BMJUA from "../../assets/fonts/BMJUA.ttf";
+import GuideModal from "../common/GuideModal";
 
 const Header = () => {
-  const [fontsLoaded] = useFonts({
-    BMJUA,
-  });
+  const [modalOn, setModalOn] = useState(false);
 
-  if (!fontsLoaded) {
-    console.log("Fonts not loaded yet");
-    return null;
-  }
+  const openModal = () => {
+    setModalOn(true);
+  };
 
+  const closeModal = () => {
+    setModalOn(false);
+  };
   return (
-    <SafeAreaView edges={["top"]} className="justify-center">
+    <SafeAreaView edges={["top"]} className="justify-center relative">
       <View className="items-center py-4">
         <Text
           className="text-4xl font-bold"
@@ -23,6 +24,16 @@ const Header = () => {
           TODOO
         </Text>
       </View>
+
+      {/* 레벨 메달아이콘 */}
+      <TouchableOpacity onPress={openModal} className="absolute top-5 right-5">
+        <Image
+          source={IconGuide}
+          style={{ width: 30, height: 30 }}
+          testID="icon-guide"
+        ></Image>
+      </TouchableOpacity>
+      <GuideModal visible={modalOn} onClose={closeModal} />
     </SafeAreaView>
   );
 };

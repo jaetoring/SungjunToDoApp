@@ -3,14 +3,20 @@ import LayoutBg from "@/components/common/LayoutBg";
 import Header from "@/components/layout/header";
 import MyProfileBox from "@/components/mypage/MyProfileBox";
 import StateMsgBox from "@/components/mypage/StateMsgBox";
+import TodoChart from "@/components/mypage/TodoChart";
 import { supabase } from "@/supabaseClient";
-import { UserInfoTableType, UserTableType } from "@/types/DBType";
+import {
+  TodoTableType,
+  UserInfoTableType,
+  UserTableType,
+} from "@/types/DBType";
 import { useCallback, useEffect, useState } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, Text } from "react-native";
 
 interface UserData {
   user: UserTableType | null;
   userInfo: UserInfoTableType | null;
+  todo: TodoTableType[] | null;
 }
 
 const MypageScreen = () => {
@@ -23,12 +29,14 @@ const MypageScreen = () => {
 
   const fetchData = useCallback(async () => {
     const userId = await getUserId();
-    const [{ data: user }, { data: userInfo }] = await Promise.all([
-      supabase.from("user").select("*").eq("user_id", userId).single(),
-      supabase.from("user_info").select("*").eq("user_id", userId).single(),
-    ]);
+    const [{ data: user }, { data: userInfo }, { data: todo }] =
+      await Promise.all([
+        supabase.from("user").select("*").eq("user_id", userId).single(),
+        supabase.from("user_info").select("*").eq("user_id", userId).single(),
+        supabase.from("todo").select("*").eq("user_id", userId),
+      ]);
 
-    setUserData({ user, userInfo });
+    setUserData({ user, userInfo, todo });
   }, []);
 
   useEffect(() => {
@@ -46,7 +54,7 @@ const MypageScreen = () => {
               : DefaultProfileImg
           }
           name={userData?.user?.name ?? "OOO"}
-          level={userData?.userInfo?.level ?? 9999}
+          level={userData?.userInfo?.level ?? 999}
         />
         <StateMsgBox
           state_msg={
@@ -54,10 +62,11 @@ const MypageScreen = () => {
           }
           onUpdated={fetchData}
         />
+        <TodoChart todoList={userData?.todo ?? null} />
         {/* 데이터 테스트 */}
-        {/* <Text selectable className="text-xs text-black">
+        <Text selectable className="text-xs text-black">
           {JSON.stringify(userData, null, 2)}
-        </Text> */}
+        </Text>
       </ScrollView>
     </LayoutBg>
   );

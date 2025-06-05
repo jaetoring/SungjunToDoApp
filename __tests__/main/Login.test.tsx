@@ -163,7 +163,7 @@ describe("Login", () => {
       .fn()
       .mockResolvedValueOnce({ error: { message: "insert 실패" } })
       .mockResolvedValueOnce({ error: null });
-    
+
     (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
       data: {},
       error: null,

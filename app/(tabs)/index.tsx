@@ -44,7 +44,6 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <>
       <LayoutBg>
         <ScrollView className="flex-1 w-full">
           <Header />
@@ -65,7 +64,6 @@ const HomeScreen = () => {
           </View>
         </ScrollView>
       </LayoutBg>
-    </>
   );
 };
 export default HomeScreen;

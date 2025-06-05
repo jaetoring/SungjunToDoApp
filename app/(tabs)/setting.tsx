@@ -14,7 +14,6 @@ const SettingScreen = () => {
   };
 
   const goToProfileEdit = () => {
-    // 프로필 수정 페이지로 이동
     router.push("/edit");
   };
 
@@ -22,21 +21,25 @@ const SettingScreen = () => {
     <LayoutBg>
       <Header />
       <ScrollView className="flex-1 w-full px-4">
+        <Text className="text-2xl font-bold text-gray-800 mb-5">설정</Text>
         <TouchableOpacity
           onPress={goToProfileEdit}
-          className="w-full bg-blue-500 rounded-md py-3 mb-4"
+          activeOpacity={0.7}
+          className="w-full bg-white rounded-xl shadow-md p-4 flex-row items-center mb-3"
         >
-          <Text className="text-center font-medium">
+          <Text className="flex-1 text-lg font-medium text-gray-800">
             프로필 수정
           </Text>
         </TouchableOpacity>
 
-        {/* 로그아웃 버튼 */}
         <TouchableOpacity
           onPress={handleLogout}
-          className="w-full bg-red-500 rounded-md py-3"
+          activeOpacity={0.7}
+          className="w-full bg-white rounded-xl shadow-md p-4 flex-row items-center mb-3"
         >
-          <Text className="text-center font-medium">로그아웃</Text>
+          <Text className="flex-1 text-lg font-medium text-red-600">
+            로그아웃
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </LayoutBg>

@@ -17,8 +17,8 @@ const BadgeIconBox = ({
         source={imageSource}
         style={{ width: 60, height: 60, marginBottom: 4 }}
       />
-      <Text className="text-sm">{badgeName}</Text>
-      <Text className="text-xs text-gray-500">{description}</Text>
+      <Text className="text-base font-semibold">{badgeName}</Text>
+      <Text className="text-sm text-gray-500">{description}</Text>
     </View>
   );
 };

@@ -89,7 +89,7 @@ const GuideModal = ({ visible, onClose }: GuideModalProps) => {
                       <Text className="text-base text-gray-600 mb-4 text-center">
                         레벨 구간에 따라 아이콘이 표시됩니다.
                       </Text>
-                      <View className="grid grid-cols-5 gap-3 w-full">
+                      <View className="w-full flex-row justify-around gap-3">
                         <LevelIconBox
                           levelRange="LV. 1~5"
                           imageSource={Level1_5}
@@ -110,6 +110,8 @@ const GuideModal = ({ visible, onClose }: GuideModalProps) => {
                           levelRange="LV. 21~25"
                           imageSource={Level21_25}
                         />
+                      </View>
+                      <View className="w-full flex-row justify-around gap-3 mt-4">
                         <LevelIconBox
                           levelRange="LV. 26~30"
                           imageSource={Level26_30}
@@ -141,7 +143,7 @@ const GuideModal = ({ visible, onClose }: GuideModalProps) => {
                       <Text className="text-base text-gray-600 mb-4 text-center">
                         조건에 따라 아래 뱃지를 얻을 수 있어요.
                       </Text>
-                      <View className="grid grid-cols-3 gap-4 mb-6">
+                      <View className="flex-row justify-around gap-4 mb-6">
                         <BadgeIconBox
                           badgeName="출석 I"
                           imageSource={Daily7}
@@ -158,7 +160,7 @@ const GuideModal = ({ visible, onClose }: GuideModalProps) => {
                           description="21일 연속 출석"
                         />
                       </View>
-                      <View className="grid grid-cols-3 gap-4 mb-6">
+                      <View className="flex-row justify-around gap-4 mb-6">
                         <BadgeIconBox
                           badgeName="노련함 I"
                           imageSource={Effort10}

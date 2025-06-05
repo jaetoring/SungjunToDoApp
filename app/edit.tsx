@@ -17,6 +17,17 @@ import {
   View,
 } from "react-native";
 
+interface UserUpdateProfileProps {
+  name: string;
+  profile_img?: string;
+}
+
+interface RNFile {
+  uri: string;
+  name: string;
+  type: string;
+}
+
 const Edit = () => {
   const [nickname, setNickname] = useState("");
   const [image, setImage] = useState<string | null>(null);
@@ -64,7 +75,7 @@ const Edit = () => {
       if (!result.canceled) {
         setImage(result.assets[0].uri);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("이미지 선택 실패:", err);
       Alert.alert("실패", "이미지 선택 중 오류가 발생했습니다.");
     }
@@ -84,7 +95,7 @@ const Edit = () => {
         return;
       }
       const userId = user.id;
-      let imageUrl: string | null = null;
+      let imageUrl: string | undefined;
 
       if (image) {
         if (image.startsWith("http")) {
@@ -94,11 +105,12 @@ const Edit = () => {
           const blob = await response.blob();
           const mimeType = blob.type;
           const fileExt = mimeType.split("/")[1];
+          const timestamp = Date.now();
 
-          const fileName = `profile-${userId}.${fileExt}`;
+          const fileName = `profile-${userId}-${timestamp}.${fileExt}`;
           const filePath = `profile-images/${fileName}`;
 
-          const fileToUpload = {
+          const fileToUpload: RNFile = {
             uri: image,
             name: fileName,
             type: mimeType,
@@ -106,7 +118,7 @@ const Edit = () => {
 
           const { error: uploadError } = await supabase.storage
             .from("avatars")
-            .upload(filePath, fileToUpload as any, {
+            .upload(filePath, fileToUpload as unknown as File, {
               cacheControl: "0",
               upsert: true,
               contentType: mimeType,
@@ -137,7 +149,7 @@ const Edit = () => {
         }
       }
 
-      const updates: any = { name: nickname };
+      const updates: UserUpdateProfileProps = { name: nickname };
       if (imageUrl) {
         updates.profile_img = imageUrl;
       }
@@ -167,7 +179,7 @@ const Edit = () => {
         ],
         { cancelable: false }
       );
-    } catch (err: any) {
+    } catch (err) {
       console.error("handleSubmit 에러:", err);
       Alert.alert("오류", "알 수 없는 오류가 발생했습니다.");
     } finally {

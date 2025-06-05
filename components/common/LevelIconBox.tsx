@@ -12,7 +12,7 @@ const LevelIconBox = ({ levelRange, imageSource }: LevelIconBoxProps) => {
         source={imageSource}
         style={{ width: 50, height: 50, marginBottom: 4 }}
       />
-      <Text className="text-sm">{levelRange}</Text>
+      <Text className="text-sm font-semibold">{levelRange}</Text>
     </View>
   );
 };

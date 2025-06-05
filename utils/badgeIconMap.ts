@@ -6,7 +6,7 @@ import effort2 from "@/assets/images/badge/effort2.png";
 import effort3 from "@/assets/images/badge/effort3.png";
 import { ImageSourcePropType } from "react-native";
 
-export const badgeImageMap: Record<string, any> = {
+export const badgeImageMap: Record<string, ImageSourcePropType> = {
   "daily1.png": daily1,
   "daily2.png": daily2,
   "daily3.png": daily3,

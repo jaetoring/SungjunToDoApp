@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/package.json",
   "name": "todoo",
   "main": "expo-router/entry",
   "version": "1.0.0",
@@ -9,7 +10,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint . --ext .ts,.tsx --format unix",
     "test:coverage": "jest --coverage",
     "mobile": "expo start --tunnel",
     "apk": "expo start --dev-client"
@@ -69,6 +70,7 @@
     "@typescript-eslint/eslint-plugin": "^8.31.0",
     "@typescript-eslint/parser": "^8.31.0",
     "eslint": "^9.25.1",
+    "eslint-formatter-unix": "^8.40.0",
     "eslint-plugin-import": "^2.31.0",
     "globals": "^16.0.0",
     "jest": "^29.2.1",

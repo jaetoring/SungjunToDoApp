@@ -1,5 +1,4 @@
 import { useTodoStore } from "@/store/todoStore";
-import { supabase } from "@/supabaseClient";
 import {
   todoAdd,
   todoComplete,
@@ -8,13 +7,7 @@ import {
 } from "@/utils/todoFunc";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import {
-  Alert,
-  Modal,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import { Modal, Text, TouchableWithoutFeedback, View } from "react-native";
 import ModalBtn from "../common/ModalBtn";
 import ModalDesc from "../common/ModalDesc";
 import ModalTitle from "../common/ModalTitle";
@@ -30,11 +23,6 @@ const TodoModal = ({ visible, onClose, onSuccess }: TodoModalProps) => {
   const [description, setDescription] = useState("");
   const { todo, mode } = useTodoStore();
 
-  const getUserId = async () => {
-    const { data } = await supabase.auth.getUser();
-    return data.user?.id;
-  };
-
   useEffect(() => {
     if (todo) {
       setTitle(todo.title);
@@ -46,67 +34,23 @@ const TodoModal = ({ visible, onClose, onSuccess }: TodoModalProps) => {
   }, [todo, visible]);
 
   // todo 수정
-  const handleUpdate = async () => {
-    if (!todo) {
-      Alert.alert("오류", "수정할 TODO가 없습니다.");
-      return;
-    }
-    try {
-      await todoUpdate(todo.todo_id, title, description);
-      onSuccess();
-    } catch (err: unknown) {
-      console.error("수정 중 에러:", err);
-      const message = err instanceof Error ? err.message : String(err);
-      Alert.alert("수정 실패", message);
-    }
+  const handleUpdate = () => {
+    todoUpdate(todo, title, description, onSuccess);
   };
 
   // todo 삭제
-  const handleDelete = async () => {
-    if (!todo) {
-      return Alert.alert("오류", "삭제할 TODO가 없습니다.");
-    }
-    try {
-      await todoDelete(todo.todo_id);
-      onSuccess();
-    } catch (err: unknown) {
-      console.error("삭제 중 에러:", err);
-      const message = err instanceof Error ? err.message : String(err);
-      Alert.alert("삭제 실패", message);
-    }
+  const handleDelete = () => {
+    todoDelete(todo, onSuccess);
   };
 
   // todo 추가
   const handleAdd = async () => {
-    try {
-      const userId = await getUserId();
-      if (!userId) throw new Error("로그인 필요");
-      await todoAdd(userId, title, description);
-      onSuccess();
-    } catch (err: unknown) {
-      console.error("추가 중 에러:", err);
-      const message = err instanceof Error ? err.message : String(err);
-      Alert.alert("추가 실패", message);
-    }
+    todoAdd(title, description, onSuccess);
   };
 
   // todo 완료
   const handleComplete = async () => {
-    if (!todo) {
-      return Alert.alert("오류", "완료할 TODO 정보가 없습니다.");
-    }
-
-    try {
-      const userId = await getUserId();
-      if (!userId) throw new Error("로그인 필요");
-
-      await todoComplete(todo.todo_id, userId);
-      onSuccess();
-    } catch (err: unknown) {
-      console.error("완료 처리 중 에러:", err);
-      const message = err instanceof Error ? err.message : String(err);
-      Alert.alert("완료 실패", message);
-    }
+    todoComplete(todo, onSuccess);
   };
 
   return (

@@ -9,6 +9,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   Text,
@@ -247,7 +248,11 @@ const Edit = () => {
           />
         </LinearGradient>
 
-        <ModalBtn label="등록" onPress={() => handleSubmit()} />
+        {loading ? (
+          <ActivityIndicator color="#F9D3C5" />
+        ) : (
+          <ModalBtn label="등록" onPress={() => handleSubmit()} />
+        )}
       </View>
 
       <Text className="absolute bottom-3 text-xs text-gray-400">MoonMiSae</Text>

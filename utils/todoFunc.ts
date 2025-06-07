@@ -1,47 +1,97 @@
 // utils/todoFunc.ts
 import { supabase } from "@/supabaseClient";
+import { TodoTableType } from "@/types/DBType";
 import { BadgeKey, getAllBadges } from "@/utils/obtainBadge";
+import { Alert } from "react-native";
 
 // todo 추가
 export const todoAdd = async (
-  userId: string,
   title: string,
-  description: string
+  description: string,
+  onSuccess: () => void
 ): Promise<void> => {
-  const { error } = await supabase
-    .from("todo")
-    .insert([{ title, description, user_id: userId }]);
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const userId = user?.id;
+    if (!userId) {
+      throw new Error("로그인 필요");
+    }
 
-  if (error) {
-    console.error("todoAdd 실패:", error);
-    throw error;
+    const { error } = await supabase
+      .from("todo")
+      .insert([{ title, description, user_id: userId }]);
+    if (error) {
+      console.error("todoAdd 실패:", error);
+      throw error;
+    }
+
+    onSuccess();
+  } catch (err: unknown) {
+    console.error("추가 중 에러:", err);
+    const message = err instanceof Error ? err.message : String(err);
+    Alert.alert("추가 실패", message);
   }
 };
 
 // todo 수정
 export const todoUpdate = async (
-  todoId: number,
+  todo: TodoTableType | null,
   title: string,
-  description: string
+  description: string,
+  onSuccess: () => void
 ): Promise<void> => {
-  const { error } = await supabase
-    .from("todo")
-    .update({ title, description })
-    .eq("todo_id", todoId);
+  if (!todo) {
+    Alert.alert("오류", "수정할 TODO가 없습니다.");
+    return;
+  }
 
-  if (error) {
-    console.error("todoUpdate 실패:", error);
-    throw error;
+  try {
+    const { error } = await supabase
+      .from("todo")
+      .update({ title, description })
+      .eq("todo_id", todo.todo_id);
+
+    if (error) {
+      console.error("todoUpdate 실패:", error);
+      throw error;
+    }
+
+    onSuccess();
+  } catch (err: unknown) {
+    console.error("수정 중 에러:", err);
+    const message = err instanceof Error ? err.message : String(err);
+    Alert.alert("수정 실패", message);
   }
 };
 
 // todo 삭제
-export const todoDelete = async (todoId: number): Promise<void> => {
-  const { error } = await supabase.from("todo").delete().eq("todo_id", todoId);
+export const todoDelete = async (
+  todo: TodoTableType | null,
+  onSuccess: () => void
+): Promise<void> => {
+  if (!todo) {
+    Alert.alert("오류", "삭제할 TODO가 없습니다.");
+    return;
+  }
 
-  if (error) {
-    console.error("todoDelete 실패:", error);
-    throw error;
+  try {
+    const { error } = await supabase
+      .from("todo")
+      .delete()
+      .eq("todo_id", todo.todo_id);
+
+    if (error) {
+      console.error("todoDelete 실패:", error);
+      throw error;
+    }
+
+    onSuccess();
+  } catch (err: unknown) {
+    console.error("삭제 중 에러:", err);
+    const message = err instanceof Error ? err.message : String(err);
+    Alert.alert("삭제 실패", message);
   }
 };
 
@@ -57,95 +107,99 @@ const badgeMapping: Record<BadgeKey, number> = {
 
 // todo 완료
 export const todoComplete = async (
-  todoId: number,
-  userId: string
+  todo: TodoTableType | null,
+  onSuccess: () => void
 ): Promise<void> => {
-  const { data: allDone, error: allDoneErr } = await supabase
-    .from("todo")
-    .select("todo_id, created_at")
-    .eq("user_id", userId)
-    .eq("is_done", true);
-
-  if (allDoneErr) {
-    console.error("todoComplete: 완료된 todo 조회 실패", allDoneErr);
-    throw allDoneErr;
+  if (!todo) {
+    Alert.alert("오류", "완료할 TODO 정보가 없습니다.");
+    return;
   }
 
-  // 오늘 날짜 기준으로 완료된 개수 계산
-  const today = new Date().toISOString().slice(0, 10);
-  const doneCountToday = allDone.filter(
-    (t) => t.created_at?.slice(0, 10) === today
-  ).length;
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const userId = user?.id;
+    if (!userId) {
+      throw new Error("로그인 필요");
+    }
 
-  // ── 2) 이 todo를 실제로 완료 처리 (is_done = true, created_at 덮어쓰기) ────────
-  const { error: completeErr } = await supabase
-    .from("todo")
-    .update({
-      is_done: true,
-      created_at: new Date().toISOString(),
-    })
-    .eq("todo_id", todoId);
-
-  if (completeErr) {
-    console.error("todoComplete: todo 완료 처리 실패", completeErr);
-    throw completeErr;
-  }
-
-  // ── 3) 하루 최대 4개까지 경험치/레벨 업데이트 ─────────────────────────────────
-  if (doneCountToday < 4) {
-    const { data: ui, error: uiErr } = await supabase
-      .from("user_info")
-      .select("current_exp, level")
+    const { data: allDone, error: allDoneErr } = await supabase
+      .from("todo")
+      .select("todo_id, created_at")
       .eq("user_id", userId)
-      .single();
+      .eq("is_done", true);
+    if (allDoneErr) {
+      console.error("todoComplete: 완료된 todo 조회 실패", allDoneErr);
+      throw allDoneErr;
+    }
+    const today = new Date().toISOString().slice(0, 10);
+    const doneCountToday = allDone.filter(
+      (t) => t.created_at?.slice(0, 10) === today
+    ).length;
 
-    if (uiErr || !ui) {
-      console.error("todoComplete: user_info 조회 실패", uiErr);
-      throw uiErr ?? new Error("유저 정보 로드 실패");
+    const { error: completeErr } = await supabase
+      .from("todo")
+      .update({
+        is_done: true,
+        created_at: new Date().toISOString(),
+      })
+      .eq("todo_id", todo.todo_id);
+    if (completeErr) {
+      console.error("todoComplete: todo 완료 처리 실패", completeErr);
+      throw completeErr;
     }
 
-    let { current_exp, level } = ui;
-    current_exp += 5;
-    if (current_exp >= 100) {
-      level += 1;
-      current_exp -= 100;
-    }
-
-    const { error: expErr } = await supabase
-      .from("user_info")
-      .update({ current_exp, level })
-      .eq("user_id", userId);
-
-    if (expErr) {
-      console.error("todoComplete: 경험치/레벨 업데이트 실패", expErr);
-      throw expErr;
-    }
-  }
-
-  // ── 4) 뱃지 Eligibility 검사 & user_badge에 upsert ────────────────────────────
-  const badgeKeys = await getAllBadges(userId);
-
-  for (const badgeKey of badgeKeys) {
-    const badgeId = badgeMapping[badgeKey];
-    if (!badgeId) {
-      console.warn("todoComplete: 알 수 없는 BadgeKey", badgeKey);
-      continue;
-    }
-
-    const { error: badgeErr } = await supabase.from("user_badge").upsert(
-      {
-        user_id: userId,
-        badge_id: badgeId,
-        obtained_at: new Date().toISOString(),
-      },
-      {
-        onConflict: "user_id, badge_id",
+    if (doneCountToday < 4) {
+      const { data: ui, error: uiErr } = await supabase
+        .from("user_info")
+        .select("current_exp, level")
+        .eq("user_id", userId)
+        .single();
+      if (uiErr || !ui) {
+        console.error("todoComplete: user_info 조회 실패", uiErr);
+        throw uiErr ?? new Error("유저 정보 로드 실패");
       }
-    );
-
-    if (badgeErr) {
-      console.error("completeTodo: 뱃지 upsert 실패", badgeKey, badgeErr);
-      // 필요하다면 throw badgeErr;
+      let { current_exp, level } = ui;
+      current_exp += 5;
+      if (current_exp >= 100) {
+        level += 1;
+        current_exp -= 100;
+      }
+      const { error: expErr } = await supabase
+        .from("user_info")
+        .update({ current_exp, level })
+        .eq("user_id", userId);
+      if (expErr) {
+        console.error("todoComplete: 경험치/레벨 업데이트 실패", expErr);
+        throw expErr;
+      }
     }
+
+    const badgeKeys = await getAllBadges(userId);
+    for (const key of badgeKeys) {
+      const badgeId = badgeMapping[key];
+      if (!badgeId) {
+        console.warn("todoComplete: 알 수 없는 BadgeKey", key);
+        continue;
+      }
+      const { error: badgeErr } = await supabase.from("user_badge").upsert(
+        {
+          user_id: userId,
+          badge_id: badgeId,
+          obtained_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id, badge_id" }
+      );
+      if (badgeErr) {
+        console.error("todoComplete: 뱃지 upsert 실패", key, badgeErr);
+      }
+    }
+
+    onSuccess();
+  } catch (err: unknown) {
+    console.error("완료 처리 중 에러:", err);
+    const message = err instanceof Error ? err.message : String(err);
+    Alert.alert("완료 실패", message);
   }
 };

@@ -1,11 +1,12 @@
-import "react-native-url-polyfill/auto";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
 import { Platform } from "react-native";
+import "react-native-url-polyfill/auto";
 
-let storage: any = undefined;
+let storage: typeof AsyncStorage | undefined = undefined;
 if (Platform.OS !== "web") {
   // 네이티브(iOS/Android)에서만 AsyncStorage 사용
-  storage = require("@react-native-async-storage/async-storage").default;
+  storage = AsyncStorage;
 }
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;

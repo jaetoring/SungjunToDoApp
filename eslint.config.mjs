@@ -10,6 +10,9 @@ export default defineConfig([
       "./metro.config.js",
       "./hooks/useThemeColor.ts",
       "./components/ThemedText.tsx",
+      "./android",
+      "./__tests__/main/TodoChart.test.tsx",
+      "./__tests__/main/TodoBox.test.tsx"
     ],
   },
   {

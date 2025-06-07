@@ -1,180 +1,163 @@
 import TodoModal from "@/components/main/TodoModal";
 import { useTodoStore } from "@/store/todoStore";
-import { jest } from "@jest/globals";
+import {
+  todoAdd,
+  todoComplete,
+  todoDelete,
+  todoUpdate,
+} from "@/utils/todoFunc";
 import { fireEvent, render } from "@testing-library/react-native";
+import React from "react";
 
-jest.mock("@/store/todoStore");
+jest.mock("@/store/todoStore", () => ({
+  useTodoStore: jest.fn(),
+}));
+jest.mock("@/utils/todoFunc", () => ({
+  todoAdd: jest.fn(),
+  todoComplete: jest.fn(),
+  todoDelete: jest.fn(),
+  todoUpdate: jest.fn(),
+}));
 
-describe("TodoModal", () => {
-  const mockTodo = {
-    id: 1,
-    title: "test1",
-    description: "test1 설명",
-    isDone: false,
-  };
+describe("TodoModal 컴포넌트 테스트", () => {
+  const mockOnClose = jest.fn();
+  const mockOnSuccess = jest.fn();
 
   beforeEach(() => {
-    (useTodoStore as unknown as jest.Mock).mockReturnValue({
-      todo: mockTodo,
-      setMode: jest.fn(),
-    });
-
-    jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.clearAllMocks();
   });
 
-  // 완료 모달 생성
-  it("mode가 isDone일 때 완료 문구와 삭제 버튼이 보인다.", () => {
+  it("visible가 false면 아무것도 렌더링되지 않아야 한다", () => {
     (useTodoStore as unknown as jest.Mock).mockReturnValue({
-      todo: mockTodo,
-      mode: "isDone",
-      setMode: jest.fn(),
-    });
-
-    const { getByText } = render(
-      <TodoModal visible={true} onClose={jest.fn()} />
-    );
-
-    expect(getByText("Todo를 완료할래요?")).toBeTruthy();
-    expect(getByText("완료")).toBeTruthy();
-  });
-
-  // 읽기 모달창 생성
-  it("mode가 read일 때 'Todo' 제목과 수정/삭제 버튼이 보인다.", () => {
-    (useTodoStore as unknown as jest.Mock).mockReturnValue({
-      todo: mockTodo,
-      mode: "read",
-      setMode: jest.fn(),
-    });
-
-    const { getByText } = render(
-      <TodoModal visible={true} onClose={jest.fn()} />
-    );
-
-    expect(getByText("Todo")).toBeTruthy();
-    expect(getByText("수정")).toBeTruthy();
-    expect(getByText("삭제")).toBeTruthy();
-  });
-
-  // 등록 모달창 생성
-  it("mode가 create일 때 등록 버튼이 보인다.", () => {
-    (useTodoStore as unknown as jest.Mock).mockReturnValue({
-      todo: mockTodo,
+      todo: null,
       mode: "create",
-      setMode: jest.fn(),
     });
-
-    const { getByText } = render(
-      <TodoModal visible={true} onClose={jest.fn()} />
+    const { queryByText } = render(
+      <TodoModal
+        visible={false}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
     );
-
-    expect(getByText("등록")).toBeTruthy();
+    expect(queryByText("Todo")).toBeNull();
   });
 
-  // 수정 버튼 이벤트
-  it("수정 버튼 클릭 시 handleUpdate가 호출된다.", () => {
+  it("mode가 create일 때 등록버튼을 누르면 todoAdd가 호출된다", () => {
     (useTodoStore as unknown as jest.Mock).mockReturnValue({
-      todo: mockTodo,
-      mode: "read",
-      setMode: jest.fn(),
-    });
-
-    const { getByText } = render(
-      <TodoModal visible={true} onClose={jest.fn()} />
-    );
-
-    const updateButton = getByText("수정");
-    fireEvent.press(updateButton);
-    expect(console.log).toHaveBeenCalledWith(
-      `이 후 해당 값으로 수정되야 해! title=test1 description=test1 설명`
-    );
-  });
-
-  // 삭제 버튼 이벤트
-  it("삭제 버튼 클릭 시 handleDelete가 호출된다.", () => {
-    (useTodoStore as unknown as jest.Mock).mockReturnValue({
-      todo: mockTodo,
-      mode: "read",
-      setMode: jest.fn(),
-    });
-
-    const { getByText } = render(
-      <TodoModal visible={true} onClose={jest.fn()} />
-    );
-
-    const deleteButton = getByText("삭제");
-    fireEvent.press(deleteButton);
-    expect(console.log).toHaveBeenCalledWith("해당 todo.id에 맞게 삭제");
-  });
-
-  // 오버레이 클릭 시 모달 닫기
-  it("모달창 외부 오버레이 클릭 시 모달이 닫힌다.", () => {
-    const onClose = jest.fn();
-    const { getByTestId } = render(
-      <TodoModal visible={true} onClose={onClose} />
-    );
-
-    const closeModalArea = getByTestId("close-modal");
-    fireEvent.press(closeModalArea);
-
-    expect(onClose).toHaveBeenCalled();
-  });
-
-  // 모달 내부를 눌렀을 때 모달이 닫히지 않아야 함
-  it("모달 내부 클릭 시 onClose가 호출되지 않는다.", () => {
-    const onClose = jest.fn();
-
-    (useTodoStore as unknown as jest.Mock).mockReturnValue({
-      todo: mockTodo,
-      mode: "read",
-      setMode: jest.fn(),
-    });
-
-    const { getByTestId } = render(
-      <TodoModal visible={true} onClose={onClose} />
-    );
-
-    const modalContent = getByTestId("modal-content");
-
-    fireEvent.press(modalContent);
-
-    expect(onClose).not.toHaveBeenCalled();
-  });
-
-  // 등록 버튼 이벤트
-  it("등록 버튼 클릭 시 handleAdd가 호출된다.", () => {
-    (useTodoStore as unknown as jest.Mock).mockReturnValue({
-      todo: mockTodo,
+      todo: null,
       mode: "create",
-      setMode: jest.fn(),
     });
-
     const { getByText } = render(
-      <TodoModal visible={true} onClose={jest.fn()} />
+      <TodoModal
+        visible={true}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
     );
-
-    const addButton = getByText("등록");
-    fireEvent.press(addButton);
-    expect(console.log).toHaveBeenCalledWith("새로운 Todo 추가");
+    fireEvent.press(getByText("등록"));
+    expect(todoAdd).toHaveBeenCalledWith("", "", mockOnSuccess);
   });
 
-  // 완료 버튼 이벤트
-  it("완료 버튼 클릭 시 handleComplete가 호출된다.", () => {
+  it("mode가 read고 is_done이 false일 때 수정 버튼을 누르면 todoUpdate가 호출된다", () => {
+    const testTodo = {
+      todo_id: 1,
+      title: "testTitle",
+      description: "testDescription",
+      is_done: false,
+    };
     (useTodoStore as unknown as jest.Mock).mockReturnValue({
-      todo: mockTodo,
-      mode: "isDone",
-      setMode: jest.fn(),
+      todo: testTodo,
+      mode: "read",
     });
-
     const { getByText } = render(
-      <TodoModal visible={true} onClose={jest.fn()} />
+      <TodoModal
+        visible={true}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
     );
-
-    const deleteButton = getByText("완료");
-    fireEvent.press(deleteButton);
-    expect(console.log).toHaveBeenCalledWith("해당 Todo 완료");
+    fireEvent.press(getByText("수정"));
+    expect(todoUpdate).toHaveBeenCalledWith(
+      testTodo,
+      testTodo.title,
+      testTodo.description,
+      mockOnSuccess
+    );
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
+  it("mode가 read고 is_done이 false일 때 삭제 버튼을 누르면 todoDelete가 호출된다", () => {
+    const testTodo = {
+      todo_id: 2,
+      title: "testTitle",
+      description: "testDescription",
+      is_done: false,
+    };
+    (useTodoStore as unknown as jest.Mock).mockReturnValue({
+      todo: testTodo,
+      mode: "read",
+    });
+    const { getByText } = render(
+      <TodoModal
+        visible={true}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
+    );
+    fireEvent.press(getByText("삭제"));
+    expect(todoDelete).toHaveBeenCalledWith(testTodo, mockOnSuccess);
+  });
+
+  it("mode가 isDone일 때 완료 버튼을 누르면 todoComplete가 호출된다", () => {
+    const testTodo = {
+      todo_id: 3,
+      title: "testTitle",
+      description: "testDescription",
+      is_done: false,
+    };
+    (useTodoStore as unknown as jest.Mock).mockReturnValue({
+      todo: testTodo,
+      mode: "isDone",
+    });
+    const { getByText } = render(
+      <TodoModal
+        visible={true}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
+    );
+    fireEvent.press(getByText("완료"));
+    expect(todoComplete).toHaveBeenCalledWith(testTodo, mockOnSuccess);
+  });
+
+  it("모달창 바깥을 누르면 onClose가 호출된다", () => {
+    (useTodoStore as unknown as jest.Mock).mockReturnValue({
+      todo: null,
+      mode: "create",
+    });
+    const { getByTestId } = render(
+      <TodoModal
+        visible={true}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
+    );
+    fireEvent.press(getByTestId("close-modal"));
+    expect(mockOnClose).toHaveBeenCalled();
+  });
+
+  it("모달창 안쪽을 누르면 onClose가 호출되지 않는다", () => {
+    (useTodoStore as unknown as jest.Mock).mockReturnValue({
+      todo: null,
+      mode: "create",
+    });
+    const { getByTestId } = render(
+      <TodoModal
+        visible={true}
+        onClose={mockOnClose}
+        onSuccess={mockOnSuccess}
+      />
+    );
+    fireEvent.press(getByTestId("modal-content"));
+    expect(mockOnClose).not.toHaveBeenCalled();
   });
 });

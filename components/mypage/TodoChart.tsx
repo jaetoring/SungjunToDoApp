@@ -1,5 +1,3 @@
-// components/mypage/TodoChart.tsx
-
 import { TodoTableType } from "@/types/DBType";
 import { useMemo, useState } from "react";
 import { Dimensions, Text, View } from "react-native";

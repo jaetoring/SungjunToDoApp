@@ -11,20 +11,63 @@ import { Alert } from "react-native";
 
 jest.setTimeout(10000);
 const mockPush = jest.fn();
-jest.mock("expo-router", () => ({ useRouter: () => ({ push: mockPush }) }));
+const mockReplace = jest.fn();
+jest.mock("expo-router", () => ({
+  useRouter: () => ({ push: mockPush, replace: mockReplace }),
+}));
 jest.mock("@/supabaseClient", () => ({
   supabase: {
     auth: {
       signInWithPassword: jest.fn(),
       getUser: jest.fn(),
     },
-    from: jest.fn(() => ({
-      select: jest.fn().mockReturnThis(),
-      eq: jest.fn().mockReturnThis(),
-      insert: jest.fn(),
-    })),
+    from: jest.fn(),
   },
 }));
+
+(supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+  if (tableName === "user") {
+    return {
+      select: (column?: string) => ({
+        eq: () => {
+          if (column === "user_id") {
+            return Promise.resolve({ data: [], error: null });
+          }
+          if (column === "name") {
+            return {
+              single: () =>
+                Promise.resolve({ data: { name: "홍길동" }, error: null }),
+            };
+          }
+          return { single: () => Promise.resolve({ data: null, error: null }) };
+        },
+      }),
+      insert: jest.fn().mockResolvedValue({ error: null }),
+      delete: jest
+        .fn()
+        .mockReturnValue({ eq: jest.fn().mockResolvedValue({ error: null }) }),
+    };
+  }
+
+  if (tableName === "user_info") {
+    return {
+      insert: jest.fn().mockResolvedValue({ error: null }),
+      delete: jest
+        .fn()
+        .mockReturnValue({ eq: jest.fn().mockResolvedValue({ error: null }) }),
+    };
+  }
+
+  return {
+    select: jest.fn().mockReturnThis(),
+    eq: jest.fn().mockReturnThis(),
+    single: jest.fn().mockResolvedValue({ data: null, error: null }),
+    insert: jest.fn().mockResolvedValue({ error: null }),
+    delete: jest
+      .fn()
+      .mockReturnValue({ eq: jest.fn().mockResolvedValue({ error: null }) }),
+  };
+});
 
 describe("Login", () => {
   const userData = {
@@ -32,8 +75,8 @@ describe("Login", () => {
     email: "test@test.com",
     password: "test123@",
   };
-
   const renderLogin = () => render(<LoginScreen />);
+
   // 버튼이벤트 하나로 묶어둠
   const inputAndSubmit = async (
     getBy: Pick<RenderAPI, "getByPlaceholderText" | "getByText">
@@ -53,28 +96,22 @@ describe("Login", () => {
 
   beforeEach(() => jest.clearAllMocks());
 
-  // 로그인에 성공하면 메인페이지로 이동된다.
-  it("로그인에 성공하면 메인페이지로 이동된다.", async () => {
+  // 로그인에 성공하면 메인페이지로 이동
+  it("로그인에 성공하면 메인페이지로 이동된다", async () => {
     (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
       data: {},
       error: null,
     });
     (supabase.auth.getUser as jest.Mock).mockResolvedValue({
-      data: { user: { ...userData } },
+      data: { user: { ...userData, email: userData.email } },
       error: null,
     });
-    (supabase.from as jest.Mock).mockReturnValue({
-      select: () => ({
-        eq: () => Promise.resolve({ data: [], error: null }),
-      }),
-      insert: () => Promise.resolve({ error: null }),
-    });
 
-    const utils = renderLogin();
-    await inputAndSubmit(utils);
+    const { getByPlaceholderText, getByText } = renderLogin();
+    await inputAndSubmit({ getByPlaceholderText, getByText });
 
     await waitFor(() => {
-      expect(mockPush).toHaveBeenCalledWith("/(tabs)");
+      expect(mockReplace).toHaveBeenCalledWith("/(tabs)");
     });
   });
 
@@ -220,12 +257,46 @@ describe("Login", () => {
       data: { user: { ...userData } },
       error: null,
     });
-    (supabase.from as jest.Mock).mockReturnValue({
-      select: () => ({
-        eq: () =>
-          Promise.resolve({ data: [{ user_id: userData.id }], error: null }),
-      }),
-      insert: mockInsert,
+    (supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+      if (tableName === "user") {
+        return {
+          select: (column?: string) => ({
+            eq: () => {
+              if (column === "user_id") {
+                return Promise.resolve({
+                  data: [{ user_id: userData.id }],
+                  error: null,
+                });
+              }
+
+              if (column === "name") {
+                return {
+                  single: () =>
+                    Promise.resolve({ data: { name: "홍길동" }, error: null }),
+                };
+              }
+
+              return {
+                single: () => Promise.resolve({ data: null, error: null }),
+              };
+            },
+          }),
+          insert: mockInsert,
+          delete: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ error: null }),
+          }),
+        };
+      }
+
+      return {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        single: jest.fn().mockResolvedValue({ data: null, error: null }),
+        insert: jest.fn().mockResolvedValue({ error: null }),
+        delete: jest.fn().mockReturnValue({
+          eq: jest.fn().mockResolvedValue({ error: null }),
+        }),
+      };
     });
 
     const utils = renderLogin();
@@ -335,5 +406,158 @@ describe("Login", () => {
     });
 
     alertSpy.mockRestore();
+  });
+
+  // user 정보 조회 실패 시 에러 출력
+  it("user 정보 조회가 실패했을 때 console.error를 호출해야 한다.", async () => {
+    const consoleSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
+      data: {},
+      error: null,
+    });
+    (supabase.auth.getUser as jest.Mock).mockResolvedValue({
+      data: { user: { ...userData } },
+      error: null,
+    });
+
+    (supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+      if (tableName === "user") {
+        return {
+          select: (column?: string) => ({
+            eq: () => {
+              if (column === "user_id") {
+                return Promise.resolve({ data: [], error: null });
+              }
+              if (column === "name") {
+                return {
+                  single: () =>
+                    Promise.resolve({
+                      data: null,
+                      error: { message: "findName 오류" },
+                    }),
+                };
+              }
+              return {
+                single: () => Promise.resolve({ data: null, error: null }),
+              };
+            },
+          }),
+          insert: jest.fn().mockResolvedValue({ error: null }),
+          delete: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ error: null }),
+          }),
+        };
+      }
+
+      if (tableName === "user_info") {
+        return {
+          insert: jest.fn().mockResolvedValue({ error: null }),
+          delete: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ error: null }),
+          }),
+        };
+      }
+
+      return {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        single: jest.fn().mockResolvedValue({ data: null, error: null }),
+        insert: jest.fn().mockResolvedValue({ error: null }),
+        delete: jest.fn().mockReturnValue({
+          eq: jest.fn().mockResolvedValue({ error: null }),
+        }),
+      };
+    });
+
+    const { getByPlaceholderText, getByText } = renderLogin();
+    await act(async () => {
+      fireEvent.changeText(getByPlaceholderText("이메일"), userData.email);
+      fireEvent.changeText(getByPlaceholderText("비밀번호"), userData.password);
+      fireEvent.press(getByText("로그인"));
+    });
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "내 정보 조회 실패",
+        "findName 오류"
+      );
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  // name이 없을 시 프로필 등록 페이지 이동
+  it("user의 name이 없으면 edit 페이지로 이동한다.", async () => {
+    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+
+    (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
+      data: {},
+      error: null,
+    });
+    (supabase.auth.getUser as jest.Mock).mockResolvedValue({
+      data: { user: { ...userData } },
+      error: null,
+    });
+
+    (supabase.from as jest.Mock).mockImplementation((tableName: string) => {
+      if (tableName === "user") {
+        return {
+          select: (column?: string) => ({
+            eq: () => {
+              if (column === "user_id") {
+                return Promise.resolve({ data: [], error: null });
+              }
+              if (column === "name") {
+                return {
+                  single: () =>
+                    Promise.resolve({ data: { name: "" }, error: null }),
+                };
+              }
+              return {
+                single: () => Promise.resolve({ data: null, error: null }),
+              };
+            },
+          }),
+          insert: jest.fn().mockResolvedValue({ error: null }),
+          delete: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ error: null }),
+          }),
+        };
+      }
+
+      if (tableName === "user_info") {
+        return {
+          insert: jest.fn().mockResolvedValue({ error: null }),
+          delete: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ error: null }),
+          }),
+        };
+      }
+
+      return {
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        single: jest.fn().mockResolvedValue({ data: null, error: null }),
+        insert: jest.fn().mockResolvedValue({ error: null }),
+        delete: jest.fn().mockReturnValue({
+          eq: jest.fn().mockResolvedValue({ error: null }),
+        }),
+      };
+    });
+
+    const { getByPlaceholderText, getByText } = renderLogin();
+    await act(async () => {
+      fireEvent.changeText(getByPlaceholderText("이메일"), userData.email);
+      fireEvent.changeText(getByPlaceholderText("비밀번호"), userData.password);
+      fireEvent.press(getByText("로그인"));
+    });
+
+    await waitFor(() => {
+      expect(mockReplace).toHaveBeenCalledWith("/edit");
+    });
+    consoleSpy.mockRestore();
   });
 });

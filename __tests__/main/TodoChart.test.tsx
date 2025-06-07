@@ -131,7 +131,6 @@ describe("TodoChart", () => {
     const scatter = getByTestId("victory-scatter");
     type LabelFn = (args: { datum: { y: number } }) => string;
     const labelFn = scatter.props.labels as LabelFn;
-
     expect(labelFn({ datum: { y: 0 } })).toBe("0개 완료");
     expect(labelFn({ datum: { y: 5 } })).toBe("5개 완료");
   });

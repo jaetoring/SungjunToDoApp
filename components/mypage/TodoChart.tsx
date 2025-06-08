@@ -1,6 +1,6 @@
 import { TodoTableType } from "@/types/DBType";
 import { useMemo, useState } from "react";
-import { Dimensions, Text, View } from "react-native";
+import { Dimensions, LogBox, Text, View } from "react-native";
 import {
   VictoryAxis,
   VictoryChart,
@@ -11,6 +11,10 @@ import {
   VictoryTooltip,
 } from "victory-native";
 import BoxBg from "../common/BoxBg";
+
+LogBox.ignoreLogs([
+  "Point: Support for defaultProps will be removed from function components",
+]);
 
 interface TodoChartProps {
   todoList: TodoTableType[] | null;

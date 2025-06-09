@@ -12,9 +12,22 @@ import {
 } from "victory-native";
 import BoxBg from "../common/BoxBg";
 
-LogBox.ignoreLogs([
-  "Point: Support for defaultProps will be removed from function components",
-]);
+/* istanbul ignore next */
+try {
+  // @ts-ignore
+  const Point = (Victory as any).Point;
+  if (Point?.defaultProps) {
+    delete Point.defaultProps;
+  }
+
+  // @ts-ignore
+  const LineSegment = (Victory as any).LineSegment;
+  if (LineSegment?.defaultProps) {
+    delete LineSegment.defaultProps;
+  }
+} catch {}
+/* istanbul ignore next */
+LogBox?.ignoreLogs?.(["Support for defaultProps will be removed"]);
 
 interface TodoChartProps {
   todoList: TodoTableType[] | null;

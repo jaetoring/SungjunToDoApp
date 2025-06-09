@@ -55,7 +55,6 @@ export default function IndexPage() {
             key={i}
             className="text-[60px] font-bold mx-0.5 text-[#FF91B0] text-center"
             style={{
-              fontFamily: "BMJUA",
               transform: [{ translateY: animationValues[i] }],
               opacity: animationValues[i].interpolate({
                 inputRange: [-50, 0],

@@ -1,6 +1,7 @@
 import { TodoTableType } from "@/types/DBType";
 import { useMemo, useState } from "react";
 import { Dimensions, LogBox, Text, View } from "react-native";
+import * as Victory from "victory-native";
 import {
   VictoryAxis,
   VictoryChart,
@@ -14,16 +15,16 @@ import BoxBg from "../common/BoxBg";
 
 /* istanbul ignore next */
 try {
-  // @ts-ignore
-  const Point = (Victory as any).Point;
-  if (Point?.defaultProps) {
-    delete Point.defaultProps;
-  }
+  const primitives = Victory as unknown as {
+    Point?: { defaultProps?: Record<string, unknown> };
+    LineSegment?: { defaultProps?: Record<string, unknown> };
+  };
 
-  // @ts-ignore
-  const LineSegment = (Victory as any).LineSegment;
-  if (LineSegment?.defaultProps) {
-    delete LineSegment.defaultProps;
+  if (primitives.Point?.defaultProps) {
+    delete primitives.Point.defaultProps;
+  }
+  if (primitives.LineSegment?.defaultProps) {
+    delete primitives.LineSegment.defaultProps;
   }
 } catch {}
 /* istanbul ignore next */

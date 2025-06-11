@@ -15,7 +15,7 @@
     "android": {
       "package": "com.todoo.app",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/splash-icon.png",
+        "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
     },
@@ -49,6 +49,7 @@
       }
     },
     "assetBundlePatterns": [
+      "assets/images/*",
       "assets/fonts/*"
     ]
   }

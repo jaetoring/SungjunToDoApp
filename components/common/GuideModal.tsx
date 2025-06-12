@@ -17,6 +17,7 @@ import Level36_40 from "@/assets/images/medal/yellowGrade.png";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import {
+  Dimensions,
   Modal,
   ScrollView,
   Text,
@@ -34,6 +35,7 @@ interface GuideModalProps {
 
 const GuideModal = ({ visible, onClose }: GuideModalProps) => {
   const [page, setPage] = React.useState<number>(1);
+  const { width: screenWidth } = Dimensions.get("window");
 
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -46,7 +48,7 @@ const GuideModal = ({ visible, onClose }: GuideModalProps) => {
                 end={{ x: 0.5, y: 1 }}
                 colors={["#FFFFFF", "#FFF4EB", "#FFF8E9"]}
                 style={{
-                  width: 400,
+                  width: Math.min(screenWidth * 0.9, 400),
                   padding: 20,
                   borderColor: "#F5CBA7",
                   borderWidth: 2,

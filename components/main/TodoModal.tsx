@@ -7,7 +7,13 @@ import {
 } from "@/utils/todoFunc";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { Modal, Text, TouchableWithoutFeedback, View } from "react-native";
+import {
+  Dimensions,
+  Modal,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import ModalBtn from "../common/ModalBtn";
 import ModalDesc from "../common/ModalDesc";
 import ModalTitle from "../common/ModalTitle";
@@ -22,6 +28,7 @@ const TodoModal = ({ visible, onClose, onSuccess }: TodoModalProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const { todo, mode } = useTodoStore();
+  const { width: screenWidth } = Dimensions.get("window");
 
   useEffect(() => {
     if (todo) {
@@ -71,7 +78,7 @@ const TodoModal = ({ visible, onClose, onSuccess }: TodoModalProps) => {
               end={{ x: 0.5, y: 1 }}
               colors={["#FFFFFF", "#FFF4EB", "#FFF8E9"]}
               style={{
-                width: 400,
+                width: Math.min(screenWidth * 0.9, 400),
                 padding: 10,
                 borderRadius: 10,
               }}

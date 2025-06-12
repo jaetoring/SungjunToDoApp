@@ -27,11 +27,15 @@ export interface BadgeTableType {
   badge_id: number;
   name: string;
   obtain_guide: string;
-  icon_url: ImageSourcePropType;
+  icon_url: string;
 }
 
 export interface UserBadgeTableType {
-  user_id: number;
   badge_id: number;
+  obtained_at: Date;
+}
+
+export interface UserBadgeListType {
+  badge: BadgeTableType;
   obtained_at: Date;
 }

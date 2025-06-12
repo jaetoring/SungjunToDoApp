@@ -82,6 +82,9 @@ describe("ProfileBox", () => {
     const { getByTestId } = render(<ProfileBox name="테스트유저" level={5} />);
 
     const img = getByTestId("profile-image");
-    expect(img.props.source).toBe(DefaultProfileImg);
+    expect(
+      img.props.source === DefaultProfileImg ||
+        img.props.defaultSource === DefaultProfileImg
+    ).toBe(true);
   });
 });

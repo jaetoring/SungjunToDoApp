@@ -122,7 +122,7 @@ describe("StateMsgBox", () => {
     const { getByText } = render(<StateMsgBox state_msg="" />);
     expect(getByText("데이터 안들어옴")).toBeTruthy();
   });
-  
+
   // 업데이트 성공 시 정상적으로 동작
   it("업데이트 성공 시 onUpdated 콜백 없이도 정상 동작한다", async () => {
     const mockSelect = jest

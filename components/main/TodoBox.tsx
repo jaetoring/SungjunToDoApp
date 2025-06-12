@@ -10,13 +10,16 @@ import Stamp from "../../assets/images/common/stamp.png";
 interface TodoBoxProps {
   todoData: TodoTableType;
   onPress?: () => void;
+  reloadData: () => void;
 }
 
-const TodoBox = ({ todoData, onPress }: TodoBoxProps) => {
+const TodoBox = ({ todoData, onPress, reloadData }: TodoBoxProps) => {
   const [modalOn, setModalOn] = useState(false);
   const setMode = useTodoStore((state) => state.setMode);
+  const setTodo = useTodoStore((state) => state.setTodo);
 
   const handleStampPress = () => {
+    setTodo(todoData);
     setModalOn(true);
     setMode("isDone");
   };
@@ -88,7 +91,14 @@ const TodoBox = ({ todoData, onPress }: TodoBoxProps) => {
         )}
       </TouchableOpacity>
 
-      <TodoModal visible={modalOn} onClose={closeModal} />
+      <TodoModal
+        visible={modalOn}
+        onClose={closeModal}
+        onSuccess={() => {
+          closeModal();
+          reloadData();
+        }}
+      />
     </>
   );
 };

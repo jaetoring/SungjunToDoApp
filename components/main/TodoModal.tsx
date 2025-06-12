@@ -1,7 +1,19 @@
 import { useTodoStore } from "@/store/todoStore";
+import {
+  todoAdd,
+  todoComplete,
+  todoDelete,
+  todoUpdate,
+} from "@/utils/todoFunc";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { Modal, Text, TouchableWithoutFeedback, View } from "react-native";
+import {
+  Dimensions,
+  Modal,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import ModalBtn from "../common/ModalBtn";
 import ModalDesc from "../common/ModalDesc";
 import ModalTitle from "../common/ModalTitle";
@@ -9,12 +21,14 @@ import ModalTitle from "../common/ModalTitle";
 interface TodoModalProps {
   visible: boolean;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
-const TodoModal = ({ visible, onClose }: TodoModalProps) => {
+const TodoModal = ({ visible, onClose, onSuccess }: TodoModalProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const { todo, mode } = useTodoStore();
+  const { width: screenWidth } = Dimensions.get("window");
 
   useEffect(() => {
     if (todo) {
@@ -28,24 +42,22 @@ const TodoModal = ({ visible, onClose }: TodoModalProps) => {
 
   // todo 수정
   const handleUpdate = () => {
-    console.log(
-      `이 후 해당 값으로 수정되야 해! title=${title} description=${description}`
-    );
+    todoUpdate(todo, title, description, onSuccess);
   };
 
   // todo 삭제
   const handleDelete = () => {
-    console.log("해당 todo.id에 맞게 삭제");
+    todoDelete(todo, onSuccess);
   };
 
   // todo 추가
-  const handleAdd = () => {
-    console.log("새로운 Todo 추가");
+  const handleAdd = async () => {
+    todoAdd(title, description, onSuccess);
   };
 
   // todo 완료
-  const handleComplete = () => {
-    console.log("해당 Todo 완료");
+  const handleComplete = async () => {
+    todoComplete(todo, onSuccess);
   };
 
   return (
@@ -66,7 +78,7 @@ const TodoModal = ({ visible, onClose }: TodoModalProps) => {
               end={{ x: 0.5, y: 1 }}
               colors={["#FFFFFF", "#FFF4EB", "#FFF8E9"]}
               style={{
-                width: 400,
+                width: Math.min(screenWidth * 0.9, 400),
                 padding: 10,
                 borderRadius: 10,
               }}
@@ -88,7 +100,7 @@ const TodoModal = ({ visible, onClose }: TodoModalProps) => {
                     description={description}
                     onChange={setDescription}
                   />
-                  {mode === "read" && todo?.isDone === false && (
+                  {mode === "read" && todo?.is_done === false && (
                     <View className="flex-row justify-between">
                       <ModalBtn label="수정" onPress={handleUpdate} />
                       <ModalBtn label="삭제" onPress={handleDelete} />

@@ -94,7 +94,21 @@ export default function LoginScreen() {
       console.log("이미 user 테이블에 유저 정보가 있음");
     }
 
-    router.push("/(tabs)");
+    const { data: findName, error: findMeErr } = await supabase
+      .from("user")
+      .select("name")
+      .eq("user_id", user.id)
+      .single();
+    if (findMeErr) {
+      console.error("내 정보 조회 실패", findMeErr.message);
+      return;
+    }
+
+    if (!findName.name) {
+      router.replace("/edit");
+    } else {
+      router.replace("/(tabs)");
+    }
   };
 
   const handleMoveSingup = () => {

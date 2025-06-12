@@ -1,17 +1,34 @@
-// components/mypage/TodoChart.tsx
-
 import { TodoTableType } from "@/types/DBType";
 import { useMemo, useState } from "react";
-import { Dimensions, Text, View } from "react-native";
+import { Dimensions, LogBox, Text, View } from "react-native";
+import * as Victory from "victory-native";
 import {
   VictoryAxis,
   VictoryChart,
+  VictoryContainer,
   VictoryLine,
   VictoryScatter,
   VictoryTheme,
   VictoryTooltip,
 } from "victory-native";
 import BoxBg from "../common/BoxBg";
+
+/* istanbul ignore next */
+try {
+  const primitives = Victory as unknown as {
+    Point?: { defaultProps?: Record<string, unknown> };
+    LineSegment?: { defaultProps?: Record<string, unknown> };
+  };
+
+  if (primitives.Point?.defaultProps) {
+    delete primitives.Point.defaultProps;
+  }
+  if (primitives.LineSegment?.defaultProps) {
+    delete primitives.LineSegment.defaultProps;
+  }
+} catch {}
+/* istanbul ignore next */
+LogBox?.ignoreLogs?.(["Support for defaultProps will be removed"]);
 
 interface TodoChartProps {
   todoList: TodoTableType[] | null;
@@ -73,6 +90,7 @@ const TodoChart = ({ todoList }: TodoChartProps) => {
           }}
         >
           <VictoryChart
+            containerComponent={<VictoryContainer />}
             width={chartWidth - 32}
             height={200}
             padding={{ top: 10, bottom: 30, left: 30, right: 10 }}
@@ -120,6 +138,7 @@ const TodoChart = ({ todoList }: TodoChartProps) => {
               labels={({ datum }) => `${datum.y}개 완료`}
               labelComponent={
                 <VictoryTooltip
+                  renderInPortal={false}
                   constrainToVisibleArea={true}
                   flyoutStyle={{
                     fill: "#fff",

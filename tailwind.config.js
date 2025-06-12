@@ -6,13 +6,6 @@ module.exports = {
     "./components/**/*.{js,jsx,ts,tsx}",
   ],
   presets: [require("nativewind/preset")],
-  theme: {
-    extend: {
-      fontFamily: {
-        bangers: ["Bangers", "sans-serif"],
-        BMJUA: ["BMJUA", "sans-serif"],
-      },
-    },
-  },
+  theme: {},
   plugins: [],
 }

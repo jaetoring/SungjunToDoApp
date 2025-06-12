@@ -8,6 +8,7 @@ import {
 import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
+import "react-native-url-polyfill/auto";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
